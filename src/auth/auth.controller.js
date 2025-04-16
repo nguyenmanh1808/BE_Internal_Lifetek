@@ -89,7 +89,7 @@ exports.login = async (req, res, next) => {
     });
     if (error) {
       const errors = error.details.map((err) => err.message);
-      return next(new Error(errors));
+      return next(new Error(errors))
     }
 
     const { email, password } = req.body;
