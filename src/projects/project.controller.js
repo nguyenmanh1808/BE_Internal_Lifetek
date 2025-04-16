@@ -8,7 +8,7 @@ exports.addProject = async (req, res, next) => {
     const project = await projectService.createProject(req.body);
     return new SuccessResponse(project).send(res);
   } catch (error) {
-    return next(error);
+    return next(error)
   }
 };
 
