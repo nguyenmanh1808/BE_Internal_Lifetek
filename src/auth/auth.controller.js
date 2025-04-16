@@ -205,15 +205,15 @@ exports.resetPassword = async (req, res, next) => {
     //   resetPasswordExpire: { $gt: Date.now() },
     // });
     console.log("Tìm theo resetPasswordToken:", resetPasswordToken);
-const user = await User.findOne({ resetPasswordToken });
+    const user = await User.findOne({ resetPasswordToken });
 
-if (!user) {
-  console.log("Không tìm thấy user với token đã hash.");
-} else {
-  console.log("User tìm được:", user.email);
-  console.log("resetPasswordExpire:", user.resetPasswordExpire);
-  console.log("Hiện tại:", new Date());
-}
+    if (!user) {
+      console.log("Không tìm thấy user với token đã hash.");
+    } else {
+      console.log("User tìm được:", user.email);
+      console.log("resetPasswordExpire:", user.resetPasswordExpire);
+      console.log("Hiện tại:", new Date());
+    }
 
     if (!user) return next(new Error("Token không hợp lệ"));
 
@@ -231,3 +231,31 @@ if (!user) {
     return next(error);
   }
 };
+exports.changePassword = async (req, res, next) => {
+  try {
+    const { oldPassword, newPassword, confirmNewPassword } = req.body;
+
+    const { error } = authValidation.changePasswordValidator.validate(req.body, {
+      abortEarly: false,
+    });
+    if (error) {
+      const errors = error.details.map((err) => err.message);
+      return next(new Error(errors));
+    }
+
+    const user = await User.findById(req.user._id);
+
+    if (!user) return next(new Error("Người dùng không tồn tại"));
+
+    const isMatch = await user.matchPassword(oldPassword);
+    if (!isMatch) return next(new Error("Mật khẩu cũ không đúng"));
+
+    user.password = newPassword;
+    await user.save();
+
+    return new SuccessResponse("Đổi mật khẩu thành công").send(res);
+  } catch (error) {
+    return next(error);
+  }
+};
+  

@@ -11,5 +11,6 @@ routerAuth.post("/logout", authMiddleware, authController.logout);
 routerAuth.post("/refresh-token", authMiddleware, authController.getNewAccessToken);
 routerAuth.post("/forgot-password", authController.forgotPassword);
 routerAuth.post("/reset-password", authController.resetPassword);
+routerAuth.post("/change-password", authMiddleware, authController.changePassword);
 
 module.exports = routerAuth;
