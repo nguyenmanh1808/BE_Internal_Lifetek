@@ -230,3 +230,30 @@ exports.resetPassword = async (req, res, next) => {
     return next(error);
   }
 };
+exports.changePassword = async (req, res, next) => {
+  try {
+    const { oldPassword, newPassword, confirmNewPassword } = req.body;
+
+    const { error } = authValidation.changePasswordValidator.validate(req.body, {
+      abortEarly: false,
+    });
+    if (error) {
+      const errors = error.details.map((err) => err.message);
+      return next(new Error(errors));
+    }
+
+    const user = await User.findById(req.user._id);
+
+    if (!user) return next(new Error("Người dùng không tồn tại"));
+
+    const isMatch = await user.matchPassword(oldPassword);
+    if (!isMatch) return next(new Error("Mật khẩu cũ không đúng"));
+
+    user.password = newPassword;
+    await user.save();
+
+    return new SuccessResponse("Đổi mật khẩu thành công").send(res);
+  } catch (error) {
+    return next(error);
+  }
+};
