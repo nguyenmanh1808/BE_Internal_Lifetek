@@ -1,5 +1,6 @@
 const Task = require("./task.model.js");
 const User = require("../users/user.model.js");
+const Project = require("../projects/project.model.js")
 const Notification = require('../notifications/notification.model.js');
 const mongoose = require("mongoose");
 const removeAccents = require("remove-accents");
@@ -153,11 +154,29 @@ exports.getAllTasks = async (skip, limit) => {
       }
     });
 };
-exports.getTaskByProject = async (projectId) => {
-  return await Task.find({ projectId });
-};
 exports.addTask = async (data) => {
-  return await Task.create(data);
+  const task = await Task.create(data);
+  const project = await Project.findById(task.projectId).populate({
+    path: "managerId",
+    select: "userName",
+  });
+     const message = `${project.managerId?.userName|| "Quản lý"} đã thêm  bạn  vào việc: ${task.title}`;
+     task.assigneeId.forEach(async (userId) => {
+      // Lưu thông báo vào MongoDB
+      const notification = new Notification({
+        userId,
+        projectId: project._id,
+        taskId: task._id,
+        type: "task_assigned",
+        message,
+        
+      });
+      await notification.save();
+
+      // Gửi thông báo qua WebSockets
+      sendNotification(userId, message);
+    });
+  return task;
 };
 exports.editTask = async (id, data) => {
   return await Task.findByIdAndUpdate(id, data, { new: true });
@@ -176,11 +195,20 @@ exports.deleteMoreTasks = async (ids) => {
   return await Task.deleteMany({ _id: { $in: objectIds } });
 };
 
-exports.getAlTaskByProject = async (projectId, skip, limit, userId) => {
+exports.getAllTaskByProject = async (role,projectId, skip, limit, userId) => {
   const pid = new mongoose.Types.ObjectId(projectId);
   const uid = new mongoose.Types.ObjectId(userId);
-
-  return await Task.find({
+  if (role == 0){
+     return await Task.find({projectId: pid})
+    .skip(skip)
+    .limit(limit)
+    .populate({
+      path: "assigneeId",
+      select: "userName email avatar",
+    });
+  }
+  else {
+    return await Task.find({
     projectId: pid,
     $or: [
       { assigneeId: uid },
@@ -193,6 +221,7 @@ exports.getAlTaskByProject = async (projectId, skip, limit, userId) => {
       path: "assigneeId",
       select: "userName email avatar",
     });
+  }
 };
 
 exports.countTaskByProject = async (projectId, userId) => {
@@ -223,13 +252,14 @@ exports.getTaskById = async (id) => {
   return await Task.findById(id);
 };
 
-exports.FindTaskByTitle = async (roleUser,skip, limit, title, assigneeIds, projectId) => {
-  const cleanName = title.trim();
-  const slugNames = removeAccents.remove(cleanName.toLowerCase());
+exports.FindTaskByTitle = async (roleUser, skip, limit, title, assigneeIds, projectId) => {
+  const words = title.trim().split(/\s+/); // tách các từ
+ const pattern = words.join('|'); // nối thành "hello|world"
+  console.log("clenan:",pattern)
   if (roleUser == 0) {
         return await Task.find({
         // assigneeId: { $in: [assigneeIds] }, // Sửa lỗi: Truyền đúng biến danh sách assigneeId
-        slugName: { $regex: slugNames, $options: "i" },
+        slugName: { $regex: pattern, $options: "i" },
         projectId: projectId,
       })
         .skip(skip)
@@ -240,7 +270,7 @@ exports.FindTaskByTitle = async (roleUser,skip, limit, title, assigneeIds, proje
   else {
      return await Task.find({
     assigneeId: { $in: [assigneeIds] }, // Sửa lỗi: Truyền đúng biến danh sách assigneeId
-    slugName: { $regex: slugNames, $options: "i" },
+    slugName: { $regex: pattern, $options: "i" },
     projectId: projectId,
   })
     .skip(skip)

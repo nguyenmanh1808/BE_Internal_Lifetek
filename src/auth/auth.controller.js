@@ -96,7 +96,7 @@ exports.login = async (req, res, next) => {
 
     // truy van user
     const user = await User.findOne({ email });
-    console.log(user)
+
     // kiem tra user
     if (!user) return next(new Error("Email chưa đăng ký"));
 
@@ -194,16 +194,16 @@ exports.resetPassword = async (req, res, next) => {
   try {
     const { token } = req.query;
     const { password, confirmPassword } = req.body;
-    console.log('token', token)
+
     const resetPasswordToken = crypto
       .createHash("sha256")
       .update(token)
       .digest("hex");
 
-    // const user = await User.findOne({
-    //   resetPasswordToken,
-    //   resetPasswordExpire: { $gt: Date.now() },
-    // });
+    const user = await User.findOne({
+      resetPasswordToken,
+      resetPasswordExpire: { $gt: Date.now() },
+    });
     console.log("Tìm theo resetPasswordToken:", resetPasswordToken);
     const user = await User.findOne({ resetPasswordToken });
 

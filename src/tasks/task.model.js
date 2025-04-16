@@ -60,10 +60,9 @@ const TaskSchema = new mongoose.Schema(
 );
 TaskSchema.pre("save", function (next) {
     this.slugName =removeAccents
-  .remove(this.title.toLowerCase())
-  .replace(/[^a-z0-9\s-]/g, "")   // Giữ lại chữ, số, khoảng trắng, gạch nối
-  .replace(/\s+/g, "-")           // Đổi khoảng trắng thành dấu gạch nối
-  .trim();
+   .remove(this.title.toLowerCase())
+   .replace(/[^a-z0-9\s]/g, "")   // Giữ lại chữ, số, khoảng trắng, gạch nối         // Đổi các kí tự đặc biệt -> khoảng trắng
+   .trim();
  // Xóa dấu
     next();
 });

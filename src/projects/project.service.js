@@ -115,10 +115,12 @@ exports.getAllProjects = async (userId, skip, limit) => {
       code: 1,
       description: 1,
       status: 1,
+      "managerId._id":1,
       "managerId.userName": 1,
       "managerId.avatar": 1,
       "managerId.email": 1,
       "managerId.phone": 1,
+      "members._id": 1,
       "members.userName": 1,
       "members.avatar": 1,
       "members.email": 1,
@@ -142,7 +144,7 @@ exports.updateProject = async (id, data) => {
   if (!mongoose.Types.ObjectId.isValid(id)) {
     throw new Error("ID không hợp lệ!");
   }
-
+  console.log(data)
   const updateData = {}; // Chứa các trường hợp lệ để cập nhật
 
   // Kiểm tra và cập nhật `managerId`
@@ -157,42 +159,28 @@ exports.updateProject = async (id, data) => {
   // Lấy danh sách `members` hiện tại
   const project = await Project.findById(id);
   if (!project) {
-    throw new Error("Dự án không tồn tại!");
+    throw new Error("Dự án không tồn tại!")
   }
 
-  let memberIds = project.members.map((m) => m.toString());
+  updateData.members = data.members .map((id) => new mongoose.Types.ObjectId(id));
 
-  // Nếu muốn **thêm** thành viên mới
-  if (Array.isArray(data.addMembers) && data.addMembers.length > 0) {
-    for (let member of data.addMembers) {
-      if (!member._id) continue;
-      const isMemberValid = await isUserExist(member._id);
-      if (!isMemberValid) {
-        throw new Error(`Thành viên với id ${member._id} không tồn tại!`);
-      }
-      // Chỉ thêm nếu chưa tồn tại
-      if (!memberIds.includes(member._id)) {
-        memberIds.push(member._id);
-      }
-    }
-  }
-
- // ✅ Nếu muốn **xóa** thành viên
-  if (Array.isArray(data.removeMembers) && data.removeMembers.length > 0) {
-    const removeIds = data.removeMembers.map(member => member._id);
-    memberIds = memberIds.filter(id => !removeIds.includes(id));
-  }
-  updateData.members = memberIds; // Cập nhật danh sách members
 
   // Cập nhật các trường khác (nếu có)
-  ["name", "code", "description", "status", "priority"].forEach((field) => {
+  ["name", "code", "description", "status", "priority","startDate","endDate"].forEach((field) => {
     if (data[field] !== undefined) {
+      
       updateData[field] = data[field];
     }
   });
-
+  console.log(id)
   // Cập nhật vào MongoDB với `$set`
-  return await Project.findByIdAndUpdate(id, { $set: updateData }, { new: true });
+  return await Project.findByIdAndUpdate( id,
+  { $set: updateData },
+  {
+    new: true,
+    runValidators: true,
+    context: 'query',
+  });
 };
 
 exports.deleteProject = async (id) => {

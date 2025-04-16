@@ -19,7 +19,7 @@ routerTask
 routerTask.param("taskId", taskController.load);
 
 routerTask.put("/:taskId/status", taskController.updateTaskStatus);
-routerTask.get("/project/:projectId", taskController.getAlTaskByProject);
+routerTask.get("/project/:projectId", taskController.getAllTaskByProject);
 routerTask.post("/:taskId/add-user", taskController.addUserToTaskController);
 routerTask.post("/filter/:projectId", taskController.filterTaskController);
 routerTask.get("/search/:projectId", taskController.searchTaskByTitle);
