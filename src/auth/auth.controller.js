@@ -200,12 +200,12 @@ exports.resetPassword = async (req, res, next) => {
       .update(token)
       .digest("hex");
 
-    const user = await User.findOne({
-      resetPasswordToken,
-      resetPasswordExpire: { $gt: Date.now() },
-    });
-    console.log("Tìm theo resetPasswordToken:", resetPasswordToken);
-    const user = await User.findOne({ resetPasswordToken });
+    // const user = await User.findOne({
+    //   resetPasswordToken,
+    //   resetPasswordExpire: { $gt: Date.now() },
+    // });
+    // console.log("Tìm theo resetPasswordToken:", resetPasswordToken);
+    // const user = await User.findOne({ resetPasswordToken });
 
     if (!user) {
       console.log("Không tìm thấy user với token đã hash.");
