@@ -224,17 +224,24 @@ exports.getAllTaskByProject = async (role,projectId, skip, limit, userId) => {
   }
 };
 
-exports.countTaskByProject = async (projectId, userId) => {
+exports.countTaskByProject = async (projectId, userId,roleUser) => {
   const pid = new mongoose.Types.ObjectId(projectId);
   const uid = new mongoose.Types.ObjectId(userId);
-
-  return await Task.countDocuments({
+  if (roleUser == 0) {
+      return await Task.countDocuments({
+      projectId: pid
+  });
+  }
+  else {
+    return await Task.countDocuments({
     projectId: pid,
     $or: [
       { assigneeId: uid },
       { assignerId: uid },
     ],
   });
+  }
+  
 };
 exports.FindTaskById = async (id) => {
   return await Task.findById(id)

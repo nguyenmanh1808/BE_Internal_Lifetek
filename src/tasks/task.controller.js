@@ -178,7 +178,7 @@ exports.getAllTaskByProject = async (req, res, next) => {
     const userId = req.user._id;
     const roleUser = req.user.role;
     const tasks = await taskService.getAllTaskByProject(roleUser,projectId, skip, limit, userId);
-    const total = await taskService.countTaskByProject(projectId, userId);
+    const total = await taskService.countTaskByProject(projectId, userId,roleUser);
 
     return new SuccessResponse(tasks, 200, "success", total, page, limit).sends(
       res
