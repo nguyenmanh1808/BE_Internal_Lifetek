@@ -224,24 +224,17 @@ exports.getAllTaskByProject = async (role,projectId, skip, limit, userId) => {
   }
 };
 
-exports.countTaskByProject = async (projectId, userId,roleUser) => {
+exports.countTaskByProject = async (projectId, userId) => {
   const pid = new mongoose.Types.ObjectId(projectId);
   const uid = new mongoose.Types.ObjectId(userId);
-  if (roleUser == 0) {
-      return await Task.countDocuments({
-      projectId: pid
-  });
-  }
-  else {
-    return await Task.countDocuments({
+
+  return await Task.countDocuments({
     projectId: pid,
     $or: [
       { assigneeId: uid },
       { assignerId: uid },
     ],
   });
-  }
-  
 };
 exports.FindTaskById = async (id) => {
   return await Task.findById(id)
@@ -260,13 +253,14 @@ exports.getTaskById = async (id) => {
 };
 
 exports.FindTaskByTitle = async (roleUser, skip, limit, title, assigneeIds, projectId) => {
-  const words = title.trim().split(/\s+/); // tách các từ
- const pattern = words.join('|'); // nối thành "hello|world"
-  console.log("clenan:",pattern)
+
+  const words = title.trim();
+  const slugName = removeAccents.remove(words.toLowerCase());
+  console.log(slugName)
   if (roleUser == 0) {
         return await Task.find({
         // assigneeId: { $in: [assigneeIds] }, // Sửa lỗi: Truyền đúng biến danh sách assigneeId
-        slugName: { $regex: pattern, $options: "i" },
+        slugName: { $regex: slugName, $options: "i" },
         projectId: projectId,
       })
         .skip(skip)
@@ -277,7 +271,7 @@ exports.FindTaskByTitle = async (roleUser, skip, limit, title, assigneeIds, proj
   else {
      return await Task.find({
     assigneeId: { $in: [assigneeIds] }, // Sửa lỗi: Truyền đúng biến danh sách assigneeId
-    slugName: { $regex: pattern, $options: "i" },
+    slugName: { $regex: slugName, $options: "i" },
     projectId: projectId,
   })
     .skip(skip)
