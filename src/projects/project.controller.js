@@ -82,10 +82,10 @@ exports.deleteProject = async (req, res, next) => {
          const projectDelete = await projectService.deleteProject(projectId);
         if (!projectDelete) return next(new Error("Project không tồn tại"));
 
-        return new SuccessResponse("Xoa project thanh cong").send(res);
+        return new SuccessResponse("Xóa dự án thành công").send(res);
     }
     else {
-      res.status(403).json(new SuccessResponse("Bạn không có quyền sửa project này"));
+      res.status(403).json(new SuccessResponse("Bạn không có quyền xóa dự án này"));
     }
    
   } catch (error) {

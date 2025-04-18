@@ -14,37 +14,46 @@ exports.updateTaskStatus = async (req, res, next) => {
   try {
     const roleUser = req.user.role;
     const { oldStatus, newStatus } = req.body;
-
-    const canChangeStatus = (role , newStatus) => {
-      const allowedStatuses = PERMISSIONS.TASK_STATUS_CHANGE[role] || [];
-      return allowedStatuses.includes(newStatus);
-    };
-
-    if (!canChangeStatus(roleUser, newStatus)) {
-      return next(new Error("Bạn không có quyền thay đổi trạng thái"));
-    }
-
-    const { taskId } = req.params;
     const userId = req.user._id;
+    const { taskId } = req.params;
+    // check user trong dự án ko
+    const task = taskService.FindTaskById(taskId);
+    const project = projectService.getProjectById(task.projectId);
+    const listMember = project.members.map(member => {
+      return member.toString();
+    })
+    if (userId.toString() == project.managerId.toString() || listMember.includes(userId.toString())) {
+      // check quyền
+          const canChangeStatus = (role , newStatus) => {
+        const allowedStatuses = PERMISSIONS.TASK_STATUS_CHANGE[role] || [];
+        return allowedStatuses.includes(newStatus);
+      };
+      if (!canChangeStatus(roleUser, newStatus)) {
+        return next(new Error("Bạn không có quyền thay đổi trạng thái"));
+      }
+      if (
+        !Object.values(STATUS).includes(oldStatus) ||
+        !Object.values(STATUS).includes(newStatus)
+      ) {
+        return next(new Error("Trạng thái không hợp lệ !"));
+      }
 
-    if (
-      !Object.values(STATUS).includes(oldStatus) ||
-      !Object.values(STATUS).includes(newStatus)
-    ) {
-      return next(new Error("Trạng thái không hợp lệ !"));
+      const updatedTask = await taskStatusChangeService.updateTaskStatusService(
+        taskId,
+        oldStatus,
+        newStatus,
+        userId,
+        "Theo dõi thay đổi",
+        "tự động khi thay đổi trạng thái",
+        CHANGE_SOURCE.API
+      );
+
+      return new SuccessResponse(updatedTask).send(res);
     }
-
-    const updatedTask = await taskStatusChangeService.updateTaskStatusService(
-      taskId,
-      oldStatus,
-      newStatus,
-      userId,
-      "Theo dõi thay đổi",
-      "tự động khi thay đổi trạng thái",
-      CHANGE_SOURCE.API
-    );
-
-    return new SuccessResponse(updatedTask).send(res);
+    else {
+     return res.status(400).json(new SuccessResponse("Bạn không thuộc dự án này."));
+    }
+    
   } catch (error) {
     return error;
   }
