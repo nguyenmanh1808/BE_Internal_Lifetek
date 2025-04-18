@@ -59,10 +59,10 @@ exports.updateProject = async (req, res, next) => {
         );
         if (!projectUpdate) return next(new Error("Project không tồn tại"));
 
-        return new SuccessResponse(projectUpdate).send(res);
+        return res.status(200).json(new SuccessResponse("Bạn không có quyền sửa project này"));
     }
     else {
-       return new SuccessResponse("Bạn không có quyền sửa project này").send(res);
+       return res.status(403).json(new SuccessResponse("Bạn không có quyền sửa project này"));
     }
    
   } catch (error) {
@@ -82,10 +82,10 @@ exports.deleteProject = async (req, res, next) => {
          const projectDelete = await projectService.deleteProject(projectId);
         if (!projectDelete) return next(new Error("Project không tồn tại"));
 
-        return new SuccessResponse("Xoa project thanh cong").send(res);
+       res.status(200).json(new SuccessResponse("Xóa thành công"));
     }
     else {
-       return new SuccessResponse("Bạn không có quyền xóa project này").send(res);
+      res.status(403).json(new SuccessResponse("Bạn không có quyền xóa project này"));;
     }
    
   } catch (error) {
