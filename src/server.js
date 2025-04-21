@@ -10,7 +10,11 @@ const { connectRedis } = require("./config/redisClient.js");
 const ErrorMiddleware = require("./middlewares/error.middleware.js");
 const { initSocket } = require("./socket.js");
 
+
 const app = express();
+
+
+
 // thông báo thời gian thực
 const server = http.createServer(app); // Tạo server HTTP
 initSocket(server); // Khởi tạo socket.io
