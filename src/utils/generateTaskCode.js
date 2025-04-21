@@ -8,7 +8,7 @@ async function getNextTaskCode(projectId) {
   );
 
   const taskNumber = String(counter.seq).padStart(3, "0");
-  return `${taskNumber}`;
+  return `TASK-${taskNumber}`;
 }
 
 module.exports = getNextTaskCode;
