@@ -28,3 +28,11 @@ exports.updateIsRead = async (id) => {
   }
   return await Notification.findByIdAndUpdate(id,{ $set: { isRead: true } }, { new: true })
 }
+exports.deleteAllNotifi = async () => {
+  try {
+    const result = await Notification.deleteMany({});
+    return result;
+  } catch (error) {
+    throw new Error('Không thể xóa tất cả thông báo');
+  }
+};

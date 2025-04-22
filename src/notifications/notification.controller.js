@@ -91,4 +91,19 @@ exports.updateIsRead = async (req, res,next) => {
   }
 
 }
+// notification.controller.js
+exports.deleteAllNotifi = async (req, res, next) => {
+  try {
+    // Gọi hàm xóa tất cả thông báo trong notifiService
+    const result = await notifiService.deleteAllNotifi();
 
+    if (!result.deletedCount) {
+      return next(new Error('Không có thông báo nào để xóa'));
+    }
+
+    // Trả về phản hồi thành công
+    return new SuccessResponse('Đã xóa tất cả thông báo').send(res);
+  } catch (error) {
+    return next(error);
+  }
+};
