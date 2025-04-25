@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const { STATUS } = require("../constants/statusConstants.js");
 const { PRIORITY, STATUS_TASK, TYPETASK } = require("../constants/index.js");
 const removeAccents = require("remove-accents");
+const getNextTaskCode = require("../utils/generateTaskCode.js");
 
 const TaskSchema = new mongoose.Schema(
   {
@@ -9,13 +10,9 @@ const TaskSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-     slugName: { type: String },
+    slugName: { type: String },
     description: { type: String },
-    type: {
-      type: String,
-      enum: ['bug', 'new_request'], 
-      required: true,
-    },
+    
     projectId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Project",
@@ -49,6 +46,9 @@ const TaskSchema = new mongoose.Schema(
     image: {
       type: String,
     },
+    code: {
+      type: String,
+    },
     type: {
       type: String,
       enum: Object.values(TYPETASK),
@@ -58,11 +58,16 @@ const TaskSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-TaskSchema.pre("save", function (next) {
-    this.slugName =removeAccents
-   .remove(this.title.toLowerCase())
-   .replace(/[^a-z0-9\s]/g, "")   // Giữ lại chữ, số, khoảng trắng, gạch nối         // Đổi các kí tự đặc biệt -> khoảng trắng
-   .trim();
+TaskSchema.pre("save",async function (next) {
+  
+  if (!this.code && this.projectId) {
+    this.code = await getNextTaskCode(this.projectId);
+  }
+
+  this.slugName =removeAccents
+  .remove(this.title.toLowerCase())
+  .replace(/[^a-z0-9\s]/g, "")   // Giữ lại chữ, số, khoảng trắng, gạch nối      
+  .trim();
  // Xóa dấu
     next();
 });

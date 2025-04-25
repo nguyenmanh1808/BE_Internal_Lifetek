@@ -91,7 +91,7 @@ exports.updateIsRead = async (req, res,next) => {
   }
 
 }
-// notification.controller.js
+
 exports.deleteAllNotifi = async (req, res, next) => {
   try {
     // Gọi hàm xóa tất cả thông báo trong notifiService

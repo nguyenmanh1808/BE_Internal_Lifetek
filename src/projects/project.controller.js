@@ -8,7 +8,7 @@ exports.addProject = async (req, res, next) => {
     const project = await projectService.createProject(req.body);
     return new SuccessResponse(project).send(res);
   } catch (error) {
-    return next(error)
+    return next(error);
   }
 };
 
@@ -49,14 +49,22 @@ exports.updateProject = async (req, res, next) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(req.project._id))
       return next(new Error("ID không hợp lệ"));
+    const userId = req.user._id;
+    const projectId = req.project._id;
+    const project = await projectService.getProjectById(projectId);
+    if (userId.toString() ==  project.managerId.toString()) {
+          const projectUpdate = await projectService.updateProject(
+              req.project._id,
+              req.body
+        );
+        if (!projectUpdate) return next(new Error("Project không tồn tại"));
 
-    const project = await projectService.updateProject(
-      req.project._id,
-      req.body
-    );
-    if (!project) return next(new Error("Project không tồn tại"));
-
-    return new SuccessResponse(project).send(res);
+        return new SuccessResponse(projectUpdate).send(res);
+    }
+    else {
+       res.status(403).json(new SuccessResponse("Bạn không có quyền sửa project này"));
+    }
+   
   } catch (error) {
     return next(error);
   }
@@ -67,11 +75,19 @@ exports.deleteProject = async (req, res, next) => {
     if (!mongoose.Types.ObjectId.isValid(req.params.idProject)) {
       return next(new Error("ID không hợp lệ"));
     }
+    const userId = req.user._id;
+    const projectId = req.params.idProject;
+    const project = await projectService.getProjectById(projectId);
+    if (userId.toString() ==  project.managerId.toString()) {
+         const projectDelete = await projectService.deleteProject(projectId);
+        if (!projectDelete) return next(new Error("Project không tồn tại"));
 
-    const project = await projectService.deleteProject(req.params.idProject);
-    if (!project) return next(new Error("Project không tồn tại"));
-
-    return new SuccessResponse("Xoa project thanh cong").send(res);
+        return new SuccessResponse("Xóa dự án thành công").send(res);
+    }
+    else {
+      res.status(403).json(new SuccessResponse("Bạn không có quyền xóa dự án này"));
+    }
+   
   } catch (error) {
     return next(error);
   }

@@ -31,8 +31,11 @@ exports.updateIsRead = async (id) => {
 exports.deleteAllNotifi = async () => {
   try {
     const result = await Notification.deleteMany({});
+    if (!result) {
+      throw new Error("Không thể xóa thông báo");
+    }
     return result;
   } catch (error) {
-    throw new Error('Không thể xóa tất cả thông báo');
+    throw new Error("Lỗi khi xóa thông báo: " + error.message);
   }
 };

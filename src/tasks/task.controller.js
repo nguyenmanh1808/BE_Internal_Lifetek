@@ -14,7 +14,8 @@ exports.updateTaskStatus = async (req, res, next) => {
   try {
     const roleUser = req.user.role;
     const { oldStatus, newStatus } = req.body;
-
+    const userId = req.user._id;
+    const { taskId } = req.params;
     const canChangeStatus = (role , newStatus) => {
       const allowedStatuses = PERMISSIONS.TASK_STATUS_CHANGE[role] || [];
       return allowedStatuses.includes(newStatus);
@@ -23,9 +24,6 @@ exports.updateTaskStatus = async (req, res, next) => {
     if (!canChangeStatus(roleUser, newStatus)) {
       return next(new Error("Bạn không có quyền thay đổi trạng thái"));
     }
-
-    const { taskId } = req.params;
-    const userId = req.user._id;
 
     if (
       !Object.values(STATUS).includes(oldStatus) ||
@@ -178,7 +176,7 @@ exports.getAllTaskByProject = async (req, res, next) => {
     const userId = req.user._id;
     const roleUser = req.user.role;
     const tasks = await taskService.getAllTaskByProject(roleUser,projectId, skip, limit, userId);
-    const total = await taskService.countTaskByProject(projectId, userId);
+    const total = await taskService.countTaskByProject(projectId, userId,roleUser);
 
     return new SuccessResponse(tasks, 200, "success", total, page, limit).sends(
       res

@@ -61,6 +61,3 @@ exports.changePasswordValidator = Joi.object({
      "any.only": "Xác nhận mật khẩu không khớp với mật khẩu mới"
    }),
  });
-
- 
- 
