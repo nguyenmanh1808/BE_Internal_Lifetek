@@ -5,26 +5,6 @@ const Notification = require('../notifications/notification.model.js');
 const mongoose = require("mongoose");
 const removeAccents = require("remove-accents");
 const { sendNotification } = require("../socket.js");
-exports.updateTaskStatusService = async (taskId, newStatus) => {
-  // Kiểm tra xem taskId có hợp lệ không
-  if (!mongoose.Types.ObjectId.isValid(taskId)) {
-    throw new Error(" task ID không phù hợp");
-  }
-
-  // Kiểm tra trạng thái hợp lệ
-  // Cập nhật trạng thái task
-  const updatedTask = await Task.findByIdAndUpdate(
-    taskId,
-    { status: newStatus },
-    { new: true }
-  );
-
-  if (!updatedTask) {
-    throw new Error("Task not found");
-  }
-
-  return updatedTask;
-};
 
 /// thêm user vào task
 exports.addUserToTask = async (taskId, userId,projectId) => {
