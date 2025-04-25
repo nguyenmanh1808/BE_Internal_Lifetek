@@ -18,7 +18,7 @@ exports.createComment = async (data) => {
                             userId,
                             projectId: task.projectId,
                             taskId:task._id,
-                            type: "comment",
+                            type: "new_comment",
                             message:`${user.userName} đã thêm bình luận vào công việc ${task.title}`,
                       });
                       await notification.save();
