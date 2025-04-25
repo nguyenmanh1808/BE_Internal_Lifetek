@@ -2,6 +2,7 @@ const Comment = require("./comment.model.js");
 const Task = require("../tasks/task.model.js");
 const User = require("../users/user.model.js")
 const { sendNotification } = require("../socket.js");
+const Notification = require('../notifications/notification.model.js');
 exports.createComment = async (data) => {
   try {
     if (!data.taskId || !data.userId || !data.content) {

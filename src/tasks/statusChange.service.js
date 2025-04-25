@@ -1,6 +1,7 @@
 const JobStatusChange = require("./task_status_change.model.js");
 const Task = require("./task.model.js");
 const User = require("../users/user.model.js")
+const Notification = require('../notifications/notification.model.js');
 const { sendNotification } = require("../socket.js");
 const updateTaskStatusService = async (taskId, oldStatus, newStatus, userId, reason, notes, changeSource) => {
   const task = await Task.findById(taskId);
