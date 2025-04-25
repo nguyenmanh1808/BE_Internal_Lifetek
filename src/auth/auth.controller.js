@@ -97,7 +97,7 @@ exports.login = async (req, res, next) => {
 
     // truy van user
     const user = await User.findOne({ email });
-    console.log(user)
+
     // kiem tra user
     if (!user) return next(new Error("Email chưa đăng ký"));
 
@@ -195,25 +195,26 @@ exports.resetPassword = async (req, res, next) => {
   try {
     const { token } = req.query;
     const { password, confirmPassword } = req.body;
-    console.log('token', token)
+
     const resetPasswordToken = crypto
       .createHash("sha256")
       .update(token)
       .digest("hex");
 
-    const user = await User.findOne({
-      resetPasswordToken,
-      resetPasswordExpire: { $gt: Date.now() },
-    });
-    console.log("Tìm theo resetPasswordToken:", resetPasswordToken);
+    // const user = await User.findOne({
+    //   resetPasswordToken,
+    //   resetPasswordExpire: { $gt: Date.now() },
+    // });
+    // console.log("Tìm theo resetPasswordToken:", resetPasswordToken);
+    // const user = await User.findOne({ resetPasswordToken }); 
 
-  if (!user) {
-    console.log("Không tìm thấy user với token đã hash.");
-  } else {
-    console.log("User tìm được:", user.email);
-    console.log("resetPasswordExpire:", user.resetPasswordExpire);
-    console.log("Hiện tại:", new Date());
-}
+    if (!user) {
+      console.log("Không tìm thấy user với token đã hash.");
+    } else {
+      console.log("User tìm được:", user.email);
+      console.log("resetPasswordExpire:", user.resetPasswordExpire);
+      console.log("Hiện tại:", new Date());
+    }
 
     if (!user) return next(new Error("Token không hợp lệ"));
 
@@ -258,3 +259,4 @@ exports.changePassword = async (req, res, next) => {
     return next(error);
   }
 };
+
