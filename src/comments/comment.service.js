@@ -26,7 +26,19 @@ exports.createComment = async (data) => {
                       await notification.save();
                         // Gửi thông báo qua WebSockets
                       sendNotification(userId, message);
-          }
+        }
+        else {
+           const notification = new Notification({
+                            userId,
+                            projectId: task.projectId,
+                            taskId:task._id,
+                            type: "new_comment",
+                            message:`Bạn đã thêm bình luận vào công việc ${task.title}`,
+                      });
+                      await notification.save();
+                        // Gửi thông báo qua WebSockets
+                      sendNotification(userId, message);
+        }
         })
     return comment;
   } catch (error) {
