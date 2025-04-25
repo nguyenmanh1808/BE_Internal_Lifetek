@@ -18,7 +18,7 @@ const updateTaskStatusService = async (taskId, oldStatus, newStatus, userId, rea
     if (userId != user._id) {
             const notification = new Notification({
                   userId,
-                  projectId:updatedTask.projectId,
+                  projectId:task.projectId,
                   taskId,
                   type: "task_update_status",
                   message:`${user.userName} đã cập nhật trạng thái công việc: ${task.title}`,
@@ -30,7 +30,7 @@ const updateTaskStatusService = async (taskId, oldStatus, newStatus, userId, rea
     else if (userId == user._id || task.assignerId == user._id) {
       const notification = new Notification({
                   userId,
-                  projectId:updatedTask.projectId,
+                  projectId:task.projectId,
                   taskId,
                   type: "task_update_status",
                   message:`Bạn đã cập nhật trạng thái công việc: ${task.title}`,
