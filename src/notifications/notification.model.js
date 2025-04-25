@@ -19,7 +19,7 @@ const NotificationSchema = new mongoose.Schema({
     },
     type: {
         type: String,
-        enum: ["task_assigned", "new_comment", "project_assigned"],
+        enum: ["task_assigned", "new_comment", "project_assigned","task_update_status"],
     },
     message: {
         type: String,
