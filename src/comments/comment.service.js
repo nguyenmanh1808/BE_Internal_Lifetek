@@ -11,7 +11,8 @@ exports.createComment = async (data) => {
     const task = await Task.findById(data.taskId);
     const user = await User.findById(data.userId )
     const comment = await Comment.create(data);
-     // thông báo
+    // thông báo
+    task.assigneeId = [...task.assigneeId, task.assignerId];
       const message = `${user.userName} đã thêm bình luận vào công việc: ${task.title}`;
       task.assigneeId.forEach(async (userId) => { 
         if (data.userId != userId) {

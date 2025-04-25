@@ -13,6 +13,7 @@ const updateTaskStatusService = async (taskId, oldStatus, newStatus, userId, rea
   task.status = newStatus;
   await task.save();
   // thông báo
+  task.assigneeId = [...task.assigneeId, task.assignerId];
   const message = `${user.userName} đã cập nhật trạng thái công việc: ${task.title}`;
   task.assigneeId.forEach(async (userId) => { 
     if (userId != user._id) {
