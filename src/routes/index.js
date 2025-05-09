@@ -6,6 +6,7 @@ const routerCmt = require("../comments/comment.route.js");
 const routeUser = require("../users/user.route.js");
 const routerNotification = require("../notifications/notification.route.js")
 const authMiddleware = require("../middlewares/auth.middleware.js");
+const projectRoleRoutes = require("../projectRole/projectRole.route.js");
 const router = express.Router();
 
 router.use("/auth", routerAuth);
@@ -16,6 +17,7 @@ const routes = {
     "/comments": routerCmt,
     "/users": routeUser,
     "/notifi": routerNotification,
+    "/project-roles": projectRoleRoutes,
     
 };
 
