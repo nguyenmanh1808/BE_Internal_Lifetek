@@ -67,4 +67,4 @@ exports.countComment = async (taskId) => {
   catch (error) {
     throw new Error("Không thể đếm bình luận. Vui lòng thử lại." + error.message);
   }
-};
+}

@@ -118,5 +118,4 @@ exports.updateTaskValidator = Joi.object({
   endDate: Joi.date().messages({
     "date.base": "Ngày hết hạn không hợp lệ",
   }),
-  type: Joi.string().valid("new_request", "bug", "task", "feature").optional(),
 });
