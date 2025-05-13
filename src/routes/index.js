@@ -7,9 +7,10 @@ const routeUser = require("../users/user.route.js");
 const routerNotification = require("../notifications/notification.route.js")
 const authMiddleware = require("../middlewares/auth.middleware.js");
 const projectRoleRoutes = require("../projectRole/projectRole.route.js");
+const workFlow = require("../workflow/workFlow.route.js")
 const router = express.Router();
 
-router.use("/auth", routerAuth);
+// router.use("/auth", routerAuth);
 
 const routes = {
     "/projects": routerProject,
@@ -18,11 +19,11 @@ const routes = {
     "/users": routeUser,
     "/notifi": routerNotification,
     "/project-roles": projectRoleRoutes,
-    
+    "/work-flow": workFlow,
 };
 
 Object.entries(routes).forEach(([path, rou]) => {    
-    router.use(path, authMiddleware ,rou);
+    router.use(path/*, authMiddleware */,rou);
 });
 
 module.exports = router;
