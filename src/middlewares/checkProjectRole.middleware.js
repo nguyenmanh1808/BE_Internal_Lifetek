@@ -1,4 +1,4 @@
-const ProjectRole = require('../projectRole/projectRole.model');
+const ProjectRole = require('../projectRole/projectRole.model.js');
 
 const checkProjectRole = (requiredRoles = []) => {
     return async (req, res, next) => {
