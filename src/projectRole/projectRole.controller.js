@@ -47,6 +47,21 @@ const remove = async (req, res) => {
     res.status(500).json({ message: "Delete failed", error: err.message });
   }
 };
+const batchAddUsersToProject = async (req, res) => {
+  try {
+    const { userIds, projectId, role } = req.body;
+
+    if (!userIds || !Array.isArray(userIds) || !projectId || role === undefined) {
+      return res.status(400).json({ message: 'Missing userIds, projectId or role' });
+    }
+
+    const roles = await service.batchAddUsersToProject(userIds, projectId, role);
+
+    res.status(201).json({ message: 'Users added successfully', data: roles });
+  } catch (err) {
+    res.status(500).json({ message: "Batch add failed", error: err.message });
+  }
+};
 
 module.exports = {
   create,
@@ -54,4 +69,5 @@ module.exports = {
   getById,
   update,
   remove,
+  batchAddUsersToProject,
 };
