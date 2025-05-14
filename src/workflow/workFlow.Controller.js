@@ -27,20 +27,58 @@ exports.createWorkflow = async (req, res) => {
   }
 };
 
+// work flow step
+exports.createWorkFlowStep = async (req, res) => {
+  try {
+    const workflowStep = await workFlowService.createWorkFlowStep(req.body);
+    res.status(200).json(workflowStep);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+}
+
 exports.updateWorkflowStep = async (req, res) => {
   try {
-    const workflow = await workFlowService.updateWorkflowStep(req.params.workflowId, req.body);
+    const workflow = await workFlowService.updateWorkflowStep(req.params.workflowStepId, req.body);
     res.json(workflow);
   } catch (err) {
     res.status(404).json({ message: err.message });
   }
 };
-
-exports.deleteWorkflow = async (req, res) => {
+exports.deleteWorkflowStep = async (req, res) => {
   try {
-    const result = await workFlowService.deleteWorkflow(req.params.workflowId);
+    const result = await workFlowService.deleteWorkflowStep(req.params.workflowStepId);
     res.json(result);
   } catch (err) {
     res.status(404).json({ message: err.message });
   }
 };
+
+// work flow transition
+
+exports.createWorkFlowTransition = async (req, res) => {
+  try {
+    const WorkFlowTransition = await workFlowService.createWorkFlowTransition(req.body);
+    res.status(200).json(WorkFlowTransition);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+}
+
+exports.updateWorkflowTransition = async (req, res) => {
+  try {
+    const WorkflowTransition = await workFlowService.updateWorkflowTransition(req.params.WorkflowTransitionId, req.body);
+    res.json(WorkflowTransition);
+  } catch (err) {
+    res.status(404).json({ message: err.message });
+  }
+}
+
+exports.deleteWorkflowTransition = async (req, res) => {
+  try {
+    const result = await workFlowService.deleteWorkflowTransition(req.params.WorkflowTransitionId);
+    res.json(result);
+  } catch (err) {
+    res.status(404).json({ message: err.message });
+  }
+}

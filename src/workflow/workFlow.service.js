@@ -65,11 +65,10 @@ exports.updateWorkflowStep = async (workflowStepId,data) => {
   if (!updateWorkflowStep) throw new Error('Không tìm thấy workflow');
   return updateWorkflowStep;
 }
-exports.deleteWorkflow = async (workflowId) => {
-  const workflow = await workFlow.find(workflowId);
-  if (!workflow) throw new Error('Không tìm thấy workflow');
-  await WorkflowStep.deleteMany({ workflowId });
-  await WorkflowTransition.deleteMany({ workflowId });
+exports.deleteWorkflowStep = async (workflowStepId) => {
+  const workflowStep = await workflowStep.find(workflowStepId);
+  if (!workflowStep) throw new Error('Không tìm thấy workflow');
+  await WorkflowStep.findByIdAndDelete({ workflowStepId });
   return { message: 'Đã xoá workflow và dữ liệu liên quan' };
 }
 
@@ -90,4 +89,17 @@ exports.createWorkFlowTransition = async (data) => {
   )
 
   return result;
+}
+
+exports.updateWorkflowTransition = async (id,data) => {
+  const updateWorkflowTransition = await WorkflowTransition.findByIdAndUpdate(id, data, { new: true });
+  if (!updateWorkflowTransition) throw new Error('Không tìm thấy workflow');
+  return updateWorkflowTransition;
+}
+
+exports.deleteWorkflowTransition = async (workflowTransitionId) => {
+  const workflowTransition = await WorkflowTransition.find(workflowTransitionId);
+  if (!workflowTransition) throw new Error('Không tìm thấy workflow');
+  await WorkflowTransition.findByIdAndDelete({ workflowTransitionId });
+  return { message: 'Đã xoá workflow và dữ liệu liên quan' };
 }

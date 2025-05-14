@@ -63,11 +63,45 @@ const batchAddUsersToProject = async (req, res) => {
   }
 };
 
+const getProjectById = async (req, res) => {
+  try {
+    const projectRoles = await service.getProjectById(req.params.projectId);
+    if (!projectRoles || projectRoles.length === 0) return res.status(404).json({ message: "Project not found" });
+
+    res.status(200).json(projectRoles);
+  } catch (err) {
+    res.status(500).json({ message: "Get project by ID failed", error: err.message });
+  }
+};
+
+const removeUserRoleInProject = async (req, res) => {
+  try {
+    const { projectId, userId } = req.params;
+
+    if (!projectId || !userId) {
+      return res.status(400).json({ message: "Missing projectId or userId" });
+    }
+
+    const result = await service.removeUserRoleInProject(userId, projectId);
+
+    if (!result) {
+      return res.status(404).json({ message: "User role not found in this project" });
+    }
+
+    res.status(200).json({ message: "User role removed from project successfully" });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to remove user role in project", error: err.message });
+  }
+};
+
+
 module.exports = {
   create,
   getAll,
   getById,
   update,
   remove,
+  getProjectById,
   batchAddUsersToProject,
+  removeUserRoleInProject,
 };
