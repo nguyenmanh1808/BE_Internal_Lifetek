@@ -74,21 +74,15 @@ exports.deleteWorkflowStep = async (workflowStepId) => {
 
 //workflow contrans
 exports.createWorkFlowTransition = async (data) => {
-  const result = await Promise.all (data.map( async (item, index) => {
-    const dataTransition = {
-      workflowId: item.workflowId,
-      fromStep: item.fromStep,
-      toStep: item.toStep,
-      requiredRole: item.requiredRole
-    }
+  const dataTransition = {
+    workflowId: data.workflowId,
+    fromStep: data.fromStep,
+    toStep: data.toStep,
+    allowedRoles: data.requiredRole
+  }
 
-    const workFlowContransiton = await WorkflowTransition.create(dataTransition);
-    return workFlowContransiton
-    })
-    
-  )
-
-  return result;
+  const workFlowContransiton = await WorkflowTransition.create(dataTransition);
+  return workFlowContransiton
 }
 
 exports.updateWorkflowTransition = async (id,data) => {
