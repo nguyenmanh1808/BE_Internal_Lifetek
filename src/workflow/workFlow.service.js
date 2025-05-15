@@ -47,7 +47,15 @@ exports.deleteWorkflow = async (workflowId) => {
   return { message: 'Đã xoá workflow và dữ liệu liên quan' };
 }
 
-  //  workflow step
+//  workflow step
+exports.getAllWorkFlowStep= async (workflowId) => {
+  const workFlowStepData =  await WorkflowStep.find({
+    workflowId
+  })
+  if (!workFlowStepData) throw new Error('Không tìm thấy workflow');
+  return workFlowStepData;
+ 
+}
 exports.createWorkFlowStep = async (data) => {
   const dataStep = {
     workflowId: workFlow._id,
@@ -73,6 +81,11 @@ exports.deleteWorkflowStep = async (workflowStepId) => {
 }
 
 //workflow contrans
+exports.getAllWorkFlowTransition = async (workflowId) => {
+  const workFlowTransitionData =  await WorkflowTransition.find(workflowId)
+  if (!workFlowTransitionData) throw new Error('Không tìm thấy workflow');
+  return workFlowTransitionData;
+}
 exports.createWorkFlowTransition = async (data) => {
   const dataTransition = {
     workflowId: data.workflowId,
