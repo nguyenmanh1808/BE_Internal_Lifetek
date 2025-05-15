@@ -2,7 +2,7 @@ const authSwagger = require("./auth.js");
 const { authSchema } = require("./components/authComponent.js");
 const { taskSchema } = require("./components/taskComponent.js");
 const { projectSchema } = require("./components/projectComponent.js");
-const {notifiSchema}   = require("./components/notifiComponent.js")
+const { notifiSchema } = require("./components/notifiComponent.js")
 const taskSwagger = require("./task.js");
 const projectSwagger = require("./project.js");
 const notifiSwagger = require("./notifi.js")
@@ -10,6 +10,8 @@ const dotenv = require("dotenv");
 const { userSwagger } = require("./user.js");
 const CmtSwagger = require("./comment.js");
 const commentSchema = require("./components/commentComponent.js");
+const projectRoleSwagger = require("./projectRole.js");
+const { projectRoleSchema } = require("./components/projectRoleComponent.js");
 dotenv.config();
 
 const domainUrl = process.env.DOMAIN_SWAGGER
@@ -37,6 +39,7 @@ const swaggerDocs = {
     ...userSwagger,
     ...CmtSwagger,
     ...notifiSwagger,
+    ...projectRoleSwagger,
   },
   components: {
     securitySchemes: {
@@ -52,6 +55,7 @@ const swaggerDocs = {
       ...projectSchema,
       ...commentSchema,
       ...notifiSchema,
+      ...projectRoleSchema,
     },
   },
   security: [
