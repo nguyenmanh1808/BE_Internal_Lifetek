@@ -11,6 +11,7 @@ router.put("/:id", controller.update);
 router.delete("/:id", controller.remove);
 router.post("/batch/", controller.batchAddUsersToProject);
 router.delete('/project/:projectId/user/:userId/role', controller.removeUserRoleInProject);
+router.delete('/project/:projectId/users/role', controller.removeRoleFromUsersInProjectController);
 
 
 module.exports = router;

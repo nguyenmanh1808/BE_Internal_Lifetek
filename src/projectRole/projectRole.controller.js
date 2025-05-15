@@ -94,6 +94,34 @@ const removeUserRoleInProject = async (req, res) => {
   }
 };
 
+const removeRoleFromUsersInProjectController = async (req, res) => {
+  try {
+    const { projectId } = req.params;
+    const { userIds, role } = req.body;  // role là number
+
+    if (!projectId || !userIds || role === undefined) {
+      return res.status(400).json({ message: "Missing projectId, userIds or role" });
+    }
+
+    if (!Array.isArray(userIds) || userIds.length === 0) {
+      return res.status(400).json({ message: "userIds must be a non-empty array" });
+    }
+
+    if (typeof role !== 'number') {
+      return res.status(400).json({ message: "role must be a number" });
+    }
+
+    const result = await service.removeRoleFromUsersInProject(userIds, role, projectId);
+
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ message: "No matching user roles found to remove" });
+    }
+
+    res.status(200).json({ message: "Roles removed successfully", deletedCount: result.deletedCount });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to remove roles", error: err.message });
+  }
+};
 
 module.exports = {
   create,
@@ -104,4 +132,5 @@ module.exports = {
   getProjectById,
   batchAddUsersToProject,
   removeUserRoleInProject,
+  removeRoleFromUsersInProjectController,
 };
