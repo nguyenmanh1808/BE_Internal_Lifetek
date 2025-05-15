@@ -6,6 +6,10 @@ routeWorkflow.get("/:projectId", workFlowController.getDetailWorkFlow);
 routeWorkflow.post("/", workFlowController.createWorkflow);
 
 // workflow step
+routeWorkflow.get(
+  "/workflow-step/:workflowId",
+  workFlowController.getAllWorkflowStep
+);
 routeWorkflow.post("/workflow-step", workFlowController.createWorkFlowStep);
 routeWorkflow.put(
   "/workflow-step/:workflowStepId",
@@ -17,17 +21,20 @@ routeWorkflow.delete(
 );
 
 // work flow transition
-
+routeWorkflow.get(
+  "/workflow-transiotion/:workflowId",
+  workFlowController.getAllWorkflowTransiton
+);
 routeWorkflow.post(
-  "/workflow-transition",
+  "/workflow-transiotion",
   workFlowController.createWorkFlowTransition
 );
 routeWorkflow.put(
-  "/workflow-transition/:WorkflowTransitionId",
+  "/workflow-transiotion/:WorkflowTransitionId",
   workFlowController.updateWorkflowTransition
 );
 routeWorkflow.delete(
-  "/workflow-transition/:WorkflowTransitionId",
+  "/workflow-transiotion/:WorkflowTransitionId",
   workFlowController.deleteWorkflowTransition
 );
 

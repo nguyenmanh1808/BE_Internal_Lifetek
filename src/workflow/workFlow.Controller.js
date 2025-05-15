@@ -28,6 +28,20 @@ exports.createWorkflow = async (req, res) => {
 };
 
 // work flow step
+exports.getAllWorkflowStep = async (req, res,next) => {
+  try {
+    const workflowId = req.params.workflowId;
+    const dataWorkFlowStep = await workFlowService.getAllWorkFlowStep(workflowId)
+    if (!dataWorkFlowStep) {
+        return next(new Error("Quy trình làm việc không tồn tại"));
+    }
+    return new SuccessResponse(dataWorkFlowStep).send(res);
+}
+catch (err) {
+    console.error('Lỗi lấy workflow:', err);
+    res.status(500).json({ message: 'Lỗi hệ thống' });
+}
+}
 exports.createWorkFlowStep = async (req, res) => {
   try {
     const workflowStep = await workFlowService.createWorkFlowStep(req.body);
@@ -55,7 +69,20 @@ exports.deleteWorkflowStep = async (req, res) => {
 };
 
 // work flow transition
-
+exports.getAllWorkflowTransiton = async (req, res, next) => {
+  try {
+    const workflowId = req.params.workflowId;
+    const dataWorkFlowTransiton = await workFlowService.getAllWorkFlowTransition(workflowId)
+    if (!dataWorkFlowTransiton) {
+        return next(new Error("Quy trình làm việc không tồn tại"));
+    }
+    return new SuccessResponse(dataWorkFlowTransiton).send(res);
+}
+catch (err) {
+    console.error('Lỗi lấy workflow:', err);
+    res.status(500).json({ message: 'Lỗi hệ thống' });
+}
+}
 exports.createWorkFlowTransition = async (req, res) => {
   try {
     const WorkFlowTransition = await workFlowService.createWorkFlowTransition(req.body);
