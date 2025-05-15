@@ -4,26 +4,26 @@ const routerProject = require("../projects/project.route.js");
 const routerTask = require("../tasks/task.route.js");
 const routerCmt = require("../comments/comment.route.js");
 const routeUser = require("../users/user.route.js");
-const routerNotification = require("../notifications/notification.route.js")
+const routerNotification = require("../notifications/notification.route.js");
 const authMiddleware = require("../middlewares/auth.middleware.js");
 const projectRoleRoutes = require("../projectRole/projectRole.route.js");
-const workFlow = require("../workflow/workFlow.route.js")
+const workFlow = require("../workflow/workFlow.route.js");
 const router = express.Router();
 
-// router.use("/auth", routerAuth);
+router.use("/auth", routerAuth);
 
 const routes = {
-    "/projects": routerProject,
-    "/tasks": routerTask,
-    "/comments": routerCmt,
-    "/users": routeUser,
-    "/notifi": routerNotification,
-    "/project-roles": projectRoleRoutes,
-    "/work-flow": workFlow,
+  "/projects": routerProject,
+  "/tasks": routerTask,
+  "/comments": routerCmt,
+  "/users": routeUser,
+  "/notifi": routerNotification,
+  "/project-roles": projectRoleRoutes,
+  "/work-flow": workFlow,
 };
 
-Object.entries(routes).forEach(([path, rou]) => {    
-    router.use(path/*, authMiddleware */,rou);
+Object.entries(routes).forEach(([path, rou]) => {
+  router.use(path, authMiddleware, rou);
 });
 
 module.exports = router;
