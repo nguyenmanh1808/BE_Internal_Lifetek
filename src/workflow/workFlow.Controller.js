@@ -3,7 +3,7 @@ const SuccessResponse = require("../utils/SuccessResponse.js");
 exports.getDetailWorkFlow = async (req, res, next) => {
     try {
         const managerId = req.user._id;
-        const projectId = req.params.projectid;
+        const projectId = req.params.projectId;
         const dataWorkFlow = await workFlowService.getDetailWorkFlowService(managerId,projectId);
 
         if (!dataWorkFlow) {

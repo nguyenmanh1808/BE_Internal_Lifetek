@@ -42,9 +42,6 @@ exports.createWorkflow = async (data) => {
 
 exports.deleteWorkflow = async (workflowId) => {
   const workflow = await workFlow.findByIdAndDelete(workflowId);
-  if (!workflow) throw new Error("Không tìm thấy workflow");
-  await WorkflowStep.deleteMany({ workflowId });
-  await WorkflowTransition.deleteMany({ workflowId });
   return { message: "Đã xoá workflow và dữ liệu liên quan" };
 };
 
@@ -78,9 +75,7 @@ exports.updateWorkflowStep = async (workflowStepId, data) => {
   return updateWorkflowStep;
 };
 exports.deleteWorkflowStep = async (workflowStepId) => {
-  const workflowStep = await workflowStep.find(workflowStepId);
-  if (!workflowStep) throw new Error("Không tìm thấy workflow");
-  await WorkflowStep.findByIdAndDelete({ workflowStepId });
+  await WorkflowStep.findByIdAndDelete(workflowStepId);
   return { message: "Đã xoá workflow và dữ liệu liên quan" };
 };
 
@@ -112,11 +107,25 @@ exports.updateWorkflowTransition = async (id, data) => {
   return updateWorkflowTransition;
 };
 
-exports.deleteWorkflowTransition = async (workflowTransitionId) => {
-  const workflowTransition = await WorkflowTransition.findById(
-    workflowTransitionId
-  );
-  if (!workflowTransition) throw new Error("Không tìm thấy workflow");
-  await WorkflowTransition.findByIdAndDelete({ workflowTransitionId });
+exports.deleteWorkflowTransition = async (id) => {
+  console.log(id);
+  await WorkflowTransition.findByIdAndDelete(id);
   return { message: "Đã xoá workflow và dữ liệu liên quan" };
+};
+
+/// checkeck quyền thay đổi status
+exports.canUserTransitionStep = async (
+  userRole,
+  workflowId,
+  fromStep,
+  toStep
+) => {
+  const transition = await WorkflowTransition.findOne({
+    workflowId,
+    fromStep,
+    toStep,
+    allowedRoles: userRole,
+  });
+
+  return !!transition; // true nếu tồn tại transition hợp lệ
 };

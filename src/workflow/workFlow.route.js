@@ -22,19 +22,19 @@ routeWorkflow.delete(
 
 // work flow transition
 routeWorkflow.get(
-  "/workflow-transiotion/:workflowId",
+  "/workflow-transition/:workflowId",
   workFlowController.getAllWorkflowTransiton
 );
 routeWorkflow.post(
-  "/workflow-transiotion",
+  "/workflow-transition",
   workFlowController.createWorkFlowTransition
 );
 routeWorkflow.put(
-  "/workflow-transiotion/:WorkflowTransitionId",
+  "/workflow-transition/:WorkflowTransitionId",
   workFlowController.updateWorkflowTransition
 );
 routeWorkflow.delete(
-  "/workflow-transiotion/:WorkflowTransitionId",
+  "/workflow-transition/:WorkflowTransitionId",
   workFlowController.deleteWorkflowTransition
 );
 
