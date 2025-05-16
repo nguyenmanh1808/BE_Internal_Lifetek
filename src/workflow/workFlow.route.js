@@ -12,9 +12,9 @@ routeWorkflow.put('/workflow-step/:workflowStepId', workFlowController.updateWor
 routeWorkflow.delete('/workflow-step/:workflowStepId', workFlowController.deleteWorkflowStep);
 
 // work flow transition
-routeWorkflow.get('/workflow-transiotion/:workflowId', workFlowController.getAllWorkflowTransiton);
-routeWorkflow.post('/workflow-transiotion', workFlowController.createWorkFlowTransition);
-routeWorkflow.put('/workflow-transiotion/:WorkflowTransitionId', workFlowController.updateWorkflowTransition);
-routeWorkflow.delete('/workflow-transiotion/:WorkflowTransitionId', workFlowController.deleteWorkflowTransition);
+routeWorkflow.get('/workflow-transition/:workflowId', workFlowController.getAllWorkflowTransiton);
+routeWorkflow.post('/workflow-transition', workFlowController.createWorkFlowTransition);
+routeWorkflow.put('/workflow-transition/:WorkflowTransitionId', workFlowController.updateWorkflowTransition);
+routeWorkflow.delete('/workflow-transition/:WorkflowTransitionId', workFlowController.deleteWorkflowTransition);
 
 module.exports = routeWorkflow;

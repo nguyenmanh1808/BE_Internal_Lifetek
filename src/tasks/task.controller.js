@@ -6,9 +6,8 @@ const taskValidator = require("./task.validation.js");
 const SuccessResponse = require("../utils/SuccessResponse.js");
 const PAGINATE = require("../constants/paginate.js");
 const { CHANGE_SOURCE, PERMISSIONS, TYPETASK } = require("../constants/index.js");
-const { STATUS } = require("../constants/statusConstants.js");
 const projectService = require("../projects/project.service.js");
-const { ObjectId } = require("mongodb");
+const workFlowService = require("../workflow/workFlow.service.js")
 /// thay đổi trạng thái
 exports.updateTaskStatus = async (req, res, next) => {
   try {
@@ -16,20 +15,22 @@ exports.updateTaskStatus = async (req, res, next) => {
     const { oldStatus, newStatus } = req.body;
     const userId = req.user._id;
     const { taskId } = req.params;
-    const canChangeStatus = (role , newStatus) => {
-      const allowedStatuses = PERMISSIONS.TASK_STATUS_CHANGE[role] || [];
-      return allowedStatuses.includes(newStatus);
-    };
-
-    if (!canChangeStatus(roleUser, newStatus)) {
-      return next(new Error("Bạn không có quyền thay đổi trạng thái"));
+    // Validate input status
+    if (!oldStatus || !newStatus) {
+      return next(new Error("Thiếu trạng thái đầu hoặc cuối"));
     }
 
-    if (
-      !Object.values(STATUS).includes(oldStatus) ||
-      !Object.values(STATUS).includes(newStatus)
-    ) {
-      return next(new Error("Trạng thái không hợp lệ !"));
+    const task = await taskService.FindTaskById(taskId);
+    if (!task) return next(new Error("Không tìm thấy task"));
+    const workFlow = await projectService.getProjectById(task.projectId) ;
+    const workflowId = workFlow._id;
+    const fromStep = oldStatus;
+    const toStep = newStatus;
+
+    // Kiểm tra quyền theo workflow transition
+    const allowed = await workFlowService.canUserTransitionStep(roleUser, workflowId, fromStep, toStep);
+    if (!allowed) {
+      return next(new Error("Bạn không có quyền chuyển trạng thái này"));
     }
 
     const updatedTask = await taskStatusChangeService.updateTaskStatusService(
@@ -38,7 +39,7 @@ exports.updateTaskStatus = async (req, res, next) => {
       newStatus,
       userId,
       "Theo dõi thay đổi",
-      "tự động khi thay đổi trạng thái",
+      "Tự động khi thay đổi trạng thái",
       CHANGE_SOURCE.API
     );
 
