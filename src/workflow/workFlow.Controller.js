@@ -2,10 +2,8 @@ const workFlowService = require('./workFlow.service.js')
 const SuccessResponse = require("../utils/SuccessResponse.js");
 exports.getDetailWorkFlow = async (req, res, next) => {
     try {
-        const managerId = req.user._id;
         const projectId = req.params.projectId;
-        const dataWorkFlow = await workFlowService.getDetailWorkFlowService(managerId,projectId);
-
+        const dataWorkFlow = await workFlowService.getDetailWorkFlowService(projectId);
         if (!dataWorkFlow) {
             return next(new Error("Quy trình làm việc không tồn tại"));
         }
