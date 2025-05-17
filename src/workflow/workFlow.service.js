@@ -8,10 +8,11 @@ exports.getDetailWorkFlowService = async (projectId) => {
 
 exports.createWorkflow = async (data) => {
   const code = {
-    projectmanager: data.projectmanager,
-    projectId: data.projectId,
+    projectmanager: data.projectmanager ? data.projectmanager : "",
+    projectId: data.projectId ? data.projectId : "",
   };
 
+  await workFlow.collection.dropIndex("code_1");
   const existing = await workFlow.find({ projectId: data.projectId });
   if (existing.length != 0) throw new Error("Code workflow đã tồn tại");
   const workflow = await workFlow.create(code);
