@@ -6,15 +6,31 @@ exports.getDetailWorkFlowService = async (projectId) => {
   return workFlowData;
 };
 
+// exports.createWorkflow = async (data) => {
+//   const code = {
+//     projectmanager: data.projectmanager ? data.projectmanager : "",
+//     projectId: data.projectId ? data.projectId : "",
+//   };
+
+//   const existing = await workFlow.find({ projectId: data.projectId });
+//   if (existing.length != 0) throw new Error("Code workflow đã tồn tại");
+//   const workflow = await workFlow.create(code);
+//   return workflow;
+// };
 exports.createWorkflow = async (data) => {
+  console.log("Dữ liệu nhận vào:", data);
+
   const code = {
-    projectmanager: data.projectmanager ? data.projectmanager : "",
-    projectId: data.projectId ? data.projectId : "",
+    projectmanager: data.managerId, // sửa lại đúng tên field từ FE gửi lên
+    projectId: data.projectId,
+    code: `${data.projectId}`,
   };
 
-  await workFlow.collection.dropIndex("code_1");
-  const existing = await workFlow.find({ projectId: data.projectId });
-  if (existing.length != 0) throw new Error("Code workflow đã tồn tại");
+  console.log("Dữ liệu chuẩn bị insert:", code);
+
+  const existing = await workFlow.findOne({ projectId: data.projectId });
+  if (existing) throw new Error("Code workflow đã tồn tại");
+
   const workflow = await workFlow.create(code);
   return workflow;
 };
@@ -34,7 +50,7 @@ exports.getAllWorkFlowStep = async (workflowId) => {
 };
 exports.createWorkFlowStep = async (data) => {
   const dataStep = {
-    workflowId: workFlow._id,
+    workflowId: data.workflowId,
     nameStep: data.nameStep,
     stepOrder: data.stepOrder,
     requiredRole: data.requiredRole,
