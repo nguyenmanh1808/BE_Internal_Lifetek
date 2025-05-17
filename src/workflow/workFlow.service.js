@@ -13,8 +13,9 @@ exports.createWorkflow = async (data) => {
     projectId: data.projectId
   };
 
-  const existing = await workFlow.find({ projectId:data.projectId });
-  if (existing) throw new Error('Code workflow đã tồn tại');
+  const existing = await workFlow.find({ projectId: data.projectId });
+  console.log(existing);
+  if (existing.length != 0) throw new Error('Code workflow đã tồn tại');
   const workflow = await workFlow.create(code);
   return workflow;
 }

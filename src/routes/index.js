@@ -10,7 +10,7 @@ const projectRoleRoutes = require("../projectRole/projectRole.route.js");
 const workFlow = require("../workflow/workFlow.route.js")
 const router = express.Router();
 
-router.use("/auth", routerAuth);
+// router.use("/auth", routerAuth);
 
 const routes = {
     "/projects": routerProject,
@@ -23,7 +23,7 @@ const routes = {
 };
 
 Object.entries(routes).forEach(([path, rou]) => {    
-    router.use(path, authMiddleware ,rou);
+    router.use(path/*, authMiddleware */,rou);
 });
 
 module.exports = router;
