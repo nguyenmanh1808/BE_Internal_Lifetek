@@ -1,35 +1,22 @@
 const workFlow = require('./workflow.model.js')
 const WorkflowStep = require('./workflowStep.model.js')
 const WorkflowTransition = require('./workflowTransition.js')
-exports.getDetailWorkFlowService = async (managerId, projectId) => {
-    const workFlowData =  await workFlow.find({
-        projectmanager: managerId,
-        projectId: projectId
-    })
-    const steps = await WorkflowStep.find({ workflowId: workFlowData._id }).sort('stepOrder');
-    const transitions = await WorkflowTransition.find({ workflowId:  workFlowData._id })
-        .populate('fromStep toStep allowedRoles');
-    
-    const data = {
-        workFlowData,
-        steps,
-        transitions 
-    }
-    return data
+exports.getDetailWorkFlowService = async (projectId) => {
+  const workFlowData = await workFlow.find({ projectId });
+    return workFlowData
 }
 
 
 exports.createWorkflow = async (data) => {
   const  code  = {
-    name : data.name,
-    projectmanager: data.projectmanager,
-    projectId: data.projectId
+    projectmanager: data.projectmanager? data.projectmanager : "",
+    projectId: data.projectId ? data.projectId : ""
   };
 
-  const existing = await workFlow.findOne({ code });
-  if (existing) throw new Error('Code workflow đã tồn tại');
+  await workFlow.collection.dropIndex("code_1");
+  const existing = await workFlow.find({ projectId: data.projectId });
+  if (existing.length != 0) throw new Error('Code workflow đã tồn tại');
   const workflow = await workFlow.create(code);
-
   return workflow;
 }
 
