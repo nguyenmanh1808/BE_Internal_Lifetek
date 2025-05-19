@@ -7,11 +7,11 @@ const SuccessResponse = require("../utils/SuccessResponse.js");
 const PAGINATE = require("../constants/paginate.js");
 const { CHANGE_SOURCE, PERMISSIONS, TYPETASK } = require("../constants/index.js");
 const projectService = require("../projects/project.service.js");
+const projectRoleService = require("../projectRole/projectRole.service.js")
 const workFlowService = require("../workflow/workFlow.service.js")
 /// thay đổi trạng thái
 exports.updateTaskStatus = async (req, res, next) => {
   try {
-    const roleUser = req.user.role;
     const { oldStatus, newStatus } = req.body;
     const userId = req.user._id;
     const { taskId } = req.params;
@@ -23,12 +23,13 @@ exports.updateTaskStatus = async (req, res, next) => {
     const task = await taskService.FindTaskById(taskId);
     if (!task) return next(new Error("Không tìm thấy task"));
     const workFlow = await projectService.getProjectById(task.projectId) ;
+    const projectRole = await projectRoleService.getRoleUserProject(task.projectId,userId)
     const workflowId = workFlow._id;
     const fromStep = oldStatus;
     const toStep = newStatus;
 
     // Kiểm tra quyền theo workflow transition
-    const allowed = await workFlowService.canUserTransitionStep(roleUser, workflowId, fromStep, toStep);
+    const allowed = await workFlowService.canUserTransitionStep(projectRole.role, workflowId, fromStep, toStep);
     if (!allowed) {
       return next(new Error("Bạn không có quyền chuyển trạng thái này"));
     }
@@ -50,48 +51,7 @@ exports.updateTaskStatus = async (req, res, next) => {
 };
 
 // thêm user vào task
-// exports.addUserToTaskController = async (req, res, next) => {
-// try {
-//   const { taskId } = req.params;
-//   const { assigneeId } = req.body;
-//   const roleUser = req.user.role;
-//   const checkPermission = PERMISSIONS.ASSIGN_TASK.includes(roleUser);
-//   const projectId = task.projectId;
 
-//   if (!checkPermission) {
-//     return next({
-//       statusCode: 403,
-//       message: "You don't have permission to add user to task",
-//     });
-//   }
-//   if (!assigneeId) {
-//     return next({
-//       statusCode: 400,
-//       message: "AssigneeId is required",
-//     });
-//   }
-
-//   const task = await taskService.getTaskById(taskId);
-//   if (!task) {
-//     return next({
-//       statusCode: 404,
-//       message: "Task not found",
-//     });
-//   }
-
-//   if (task.assigneeId.includes(assigneeId)) {
-//     return next({
-//       statusCode: 400,
-//       message: "Người dùng đã được thêm rồi!!",
-//     });
-//   }
-
-//   const updatedTask = await taskService.addUserToTask(taskId, assigneeId);
-//   return new SuccessResponse(updatedTask).send(res);
-// } catch (error) {
-//   return next(error);
-// }
-// };
 exports.addUserToTaskController = async (req, res, next) => {
   try {
     const { taskId } = req.params;

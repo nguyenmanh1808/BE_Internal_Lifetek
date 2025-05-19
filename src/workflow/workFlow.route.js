@@ -16,5 +16,6 @@ routeWorkflow.get('/workflow-transition/:workflowId', workFlowController.getAllW
 routeWorkflow.post('/workflow-transition', workFlowController.createWorkFlowTransition);
 routeWorkflow.put('/workflow-transition/:WorkflowTransitionId', workFlowController.updateWorkflowTransition);
 routeWorkflow.delete('/workflow-transition/:WorkflowTransitionId', workFlowController.deleteWorkflowTransition);
+routeWorkflow.delete('/delete-all/workflow-transition/:WorkflowId', workFlowController.deleteAllWorkflowTransition)
 
 module.exports = routeWorkflow;

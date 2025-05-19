@@ -30,17 +30,11 @@ exports.createWorkflow = async (data) => {
   if (existing) throw new Error('Code workflow đã tồn tại');
   const workflow = await workFlow.create(code);
 
-  
-  // tạo workflow contrain
-  const dataContrain = {
-    workflowId: workFlow._id,
-    fromStep : data
-  }
   return workflow;
 }
 
-exports.deleteWorkflow = async (workflowId) => {
-  const workflow = await workFlow.findByIdAndDelete(workflowId);
+exports.deleteAllWorkflowTransition = async (workflowId) => {
+  await WorkflowTransition.deleteMany(workflowId);
   return { message: 'Đã xoá workflow và dữ liệu liên quan' };
 }
 

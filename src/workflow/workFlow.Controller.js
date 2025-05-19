@@ -109,3 +109,11 @@ exports.deleteWorkflowTransition = async (req, res) => {
     res.status(404).json({ message: err.message });
   }
 }
+exports.deleteAllWorkflowTransition = async (req,res)=>{
+   try {
+    const result = await workFlowService.deleteAllWorkflowTransition(req.params.WorkflowId);
+    res.json(result);
+  } catch (err) {
+    res.status(404).json({ message: err.message });
+  }
+}

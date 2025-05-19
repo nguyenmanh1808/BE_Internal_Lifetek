@@ -31,6 +31,9 @@ const deleteProjectRole = async (id) => {
   return await ProjectRole.findByIdAndDelete(id);
 };
 
+const getRoleUserProject = async(projectId, userId)=>{
+  return await ProjectRole.find({projectId:projectId, userId: userId});
+}
 const getProjectById = async (projectId) => {
   try {
     // Tìm tất cả ProjectRole với projectId, sau đó populate userId
@@ -67,4 +70,5 @@ module.exports = {
   batchAddUsersToProject,
   getProjectById,
   removeUserRoleInProject,
+  getRoleUserProject,
 };
