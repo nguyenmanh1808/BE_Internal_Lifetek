@@ -8,10 +8,13 @@ exports.getDetailWorkFlowService = async (projectId) => {
 
 
 exports.createWorkflow = async (data) => {
-  const  code  = {
-    projectmanager: data.projectmanager? data.projectmanager : "",
-    projectId: data.projectId ? data.projectId : ""
+  const   code = {
+    projectmanager: data.managerId, // sửa lại đúng tên field từ FE gửi lên
+    projectId: data.projectId,
+    code: `${data.projectId}`,
   };
+
+ 
   const existing = await workFlow.find({ projectId: data.projectId });
   if (existing.length != 0) throw new Error('Code workflow đã tồn tại');
   const workflow = await workFlow.create(code);
@@ -56,7 +59,7 @@ exports.deleteWorkflowStep = async (workflowStepId) => {
 
 //workflow contrans
 exports.getAllWorkFlowTransition = async (workflowId) => {
-  const workFlowTransitionData =  await WorkflowTransition.find(workflowId)
+  const workFlowTransitionData =  await WorkflowTransition.find({workflowId:workflowId})
   if (!workFlowTransitionData) throw new Error('Không tìm thấy workflow');
   return workFlowTransitionData;
 }

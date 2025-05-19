@@ -38,7 +38,7 @@ const getProjectById = async (projectId) => {
   try {
     // Tìm tất cả ProjectRole với projectId, sau đó populate userId
     const projectRoles = await ProjectRole.find({ projectId })
-      .populate('userId', 'name email');  // Populate các trường của User (ví dụ: name và email)
+      .populate('userId', 'name email userName');  // Populate các trường của User (ví dụ: name và email)
 
     if (!projectRoles || projectRoles.length === 0) {
       throw new Error("Project not found");
@@ -61,6 +61,19 @@ const removeUserRoleInProject = async (userId, projectId) => {
   }
 };
 
+const removeRoleFromUsersInProject = async (userIds, role, projectId) => {
+  try {
+    const result = await ProjectRole.deleteMany({
+      userId: { $in: userIds },
+      role: role,         // role là number
+      projectId: projectId
+    });
+    return result;
+  } catch (error) {
+    throw new Error('Error while removing roles from users in project');
+  }
+};
+
 module.exports = {
   createProjectRole,
   getAllProjectRoles,
@@ -71,4 +84,5 @@ module.exports = {
   getProjectById,
   removeUserRoleInProject,
   getRoleUserProject,
+  removeRoleFromUsersInProject,
 };
