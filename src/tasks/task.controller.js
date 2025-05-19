@@ -12,6 +12,7 @@ const workFlowService = require("../workflow/workFlow.service.js")
 /// thay đổi trạng thái
 exports.updateTaskStatus = async (req, res, next) => {
   try {
+   
     const { oldStatus, newStatus } = req.body;
     const userId = req.user._id;
     const { taskId } = req.params;
@@ -19,6 +20,7 @@ exports.updateTaskStatus = async (req, res, next) => {
     if (!oldStatus || !newStatus) {
       return next(new Error("Thiếu trạng thái đầu hoặc cuối"));
     }
+  
 
     const task = await taskService.FindTaskById(taskId);
     if (!task) return next(new Error("Không tìm thấy task"));
@@ -27,9 +29,10 @@ exports.updateTaskStatus = async (req, res, next) => {
     const workflowId = workFlow._id;
     const fromStep = oldStatus;
     const toStep = newStatus;
-
+   
     // Kiểm tra quyền theo workflow transition
     const allowed = await workFlowService.canUserTransitionStep(projectRole.role, workflowId, fromStep, toStep);
+    console.log("allowed",allowed)
     if (!allowed) {
       return next(new Error("Bạn không có quyền chuyển trạng thái này"));
     }

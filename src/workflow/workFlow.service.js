@@ -90,13 +90,14 @@ exports.deleteWorkflowTransition = async (id) => {
 
 /// checkeck quyền thay đổi status
 exports.canUserTransitionStep = async (userRole, workflowId, fromStep, toStep) =>{
+ 
   const transition = await WorkflowTransition.findOne({
     workflowId,
     fromStep,
     toStep,
     allowedRoles: userRole
   });
-
+   console.log("transition",transition)
   return !!transition; // true nếu tồn tại transition hợp lệ
 }
   
