@@ -22,7 +22,7 @@ exports.createWorkflow = async (data) => {
 }
 
 exports.deleteAllWorkflowTransition = async (workflowId) => {
-  await WorkflowTransition.deleteMany(workflowId);
+  await WorkflowTransition.deleteMany({workflowId});
   return { message: 'Đã xoá workflow và dữ liệu liên quan' };
 }
 
@@ -54,6 +54,10 @@ exports.updateWorkflowStep = async (workflowStepId,data) => {
 }
 exports.deleteWorkflowStep = async (workflowStepId) => {
   await WorkflowStep.findByIdAndDelete( workflowStepId );
+  return { message: 'Đã xoá workflow và dữ liệu liên quan' };
+}
+exports.deleteAllWorkflowStep = async (workflowId)=>{
+   await WorkflowStep.deleteMany({workflowId});
   return { message: 'Đã xoá workflow và dữ liệu liên quan' };
 }
 

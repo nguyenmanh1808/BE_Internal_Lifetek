@@ -10,7 +10,7 @@ routeWorkflow.get('/workflow-step/:workflowId', workFlowController.getAllWorkflo
 routeWorkflow.post('/workflow-step', workFlowController.createWorkFlowStep);
 routeWorkflow.put('/workflow-step/:workflowStepId', workFlowController.updateWorkflowStep);
 routeWorkflow.delete('/workflow-step/:workflowStepId', workFlowController.deleteWorkflowStep);
-
+routeWorkflow.delete('/delete-all/workflow-step/:workflowId', workFlowController.deleteAllWorkflowStep);
 // work flow transition
 routeWorkflow.get('/workflow-transition/:workflowId', workFlowController.getAllWorkflowTransiton);
 routeWorkflow.post('/workflow-transition', workFlowController.createWorkFlowTransition);
