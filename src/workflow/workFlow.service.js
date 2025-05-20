@@ -82,7 +82,6 @@ exports.updateWorkflowTransition = async (id,data) => {
 }
 
 exports.deleteWorkflowTransition = async (id) => {
-  console.log(id);
   await WorkflowTransition.findByIdAndDelete(id);
   return { message: 'Đã xoá workflow và dữ liệu liên quan' };
 }
