@@ -67,7 +67,7 @@ exports.deleteWorkflowStep = async (req, res) => {
 };
 exports.deleteAllWorkflowStep = async(req,res)=>{
    try {
-    const result = await workFlowService.deleteAllWorkflowStep(req.params.WorkflowId);
+    const result = await workFlowService.deleteAllWorkflowStep(req.params.workflowId);
     res.json(result);
   } catch (err) {
     res.status(404).json({ message: err.message });
