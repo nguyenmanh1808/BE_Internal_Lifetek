@@ -68,7 +68,7 @@ exports.createWorkFlowTransition = async (data) => {
     workflowId: data.workflowId,
     fromStep: data.fromStep,
     toStep: data.toStep,
-    allowedRoles: data.requiredRole
+    allowedRoles: data.allowedRoles
   }
 
   const workFlowContransiton = await WorkflowTransition.create(dataTransition);
