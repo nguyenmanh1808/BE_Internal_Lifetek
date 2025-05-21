@@ -173,7 +173,7 @@ exports.getCountTaskInProject = async (req, res, next) => {
   try {
     const userId = req.user._id; // Lấy userId từ token xác thực
     const { idProject } = req.params; // Lấy projectId từ URL
-
+    console.log("userId",userId)
     // Kiểm tra nếu không có projectId
     if (!idProject) {
       return next(new Error("ProjectId không được để trống!!!"));
