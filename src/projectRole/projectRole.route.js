@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const controller = require("./projectRole.controller");
+const mongoose = require('mongoose');
 
 // Tạo vai trò mới cho project
 router.post("/", controller.createRole);
@@ -12,12 +13,12 @@ router.get("/project/:projectId", controller.getRolesByProject);
 router.put("/:roleId", controller.updateRole);
 
 // Xoá vai trò
-router.delete("/:roleId", controller.deleteRole);
+router.delete("/", controller.deleteRoles);
 
 // Thêm người dùng vào vai trò
 router.post("/:roleId/add-users", controller.addUsersToRole);
 
 // Xoá người dùng khỏi vai trò
-router.post("/:roleId/remove-users", controller.removeUsersFromRole);
+router.delete("/:roleId/remove-users", controller.removeUsersFromRole);
 
 module.exports = router;
