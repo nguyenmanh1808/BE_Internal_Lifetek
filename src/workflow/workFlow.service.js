@@ -84,6 +84,11 @@ exports.createWorkFlowTransition = async (data) => {
 }
 
 exports.updateWorkflowTransition = async (id,data) => {
+  const result = await WorkflowTransition.find(data);
+  console.log('data',data)
+  if(result?.length != 0){
+      throw new Error(' Luồng  đã tồn tại');
+  }
   const updateWorkflowTransition = await WorkflowTransition.findByIdAndUpdate(id, data, { new: true });
   if (!updateWorkflowTransition) throw new Error('Không tìm thấy workflow');
   return updateWorkflowTransition;
