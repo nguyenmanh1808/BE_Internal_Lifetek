@@ -1,17 +1,23 @@
 const express = require("express");
+const router = express.Router();
 const controller = require("./projectRole.controller");
 
-const router = express.Router();
+// Tạo vai trò mới cho project
+router.post("/", controller.createRole);
 
-router.post("/", controller.create);
-router.get("/", controller.getAll);
-router.get("/:id", controller.getById);
-router.get("/project/:projectId", controller.getProjectById);
-router.put("/:id", controller.update);
-router.delete("/:id", controller.remove);
-router.post("/batch/", controller.batchAddUsersToProject);
-router.delete('/project/:projectId/user/:userId/role', controller.removeUserRoleInProject);
-router.delete('/project/:projectId/users/role', controller.removeRoleFromUsersInProjectController);
+// Lấy tất cả vai trò trong 1 project
+router.get("/project/:projectId", controller.getRolesByProject);
 
+// Cập nhật vai trò (tên, mô tả, quyền,...)
+router.put("/:roleId", controller.updateRole);
+
+// Xoá vai trò
+router.delete("/:roleId", controller.deleteRole);
+
+// Thêm người dùng vào vai trò
+router.post("/:roleId/add-users", controller.addUsersToRole);
+
+// Xoá người dùng khỏi vai trò
+router.post("/:roleId/remove-users", controller.removeUsersFromRole);
 
 module.exports = router;
