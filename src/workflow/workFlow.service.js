@@ -74,13 +74,10 @@ exports.createWorkFlowTransition = async (data) => {
     toStep: data.toStep,
     allowedRoles: data.allowedRoles
   }
-  const result = await WorkflowTransition.findOne({
-    workflowId: data.workflowId,
-    fromStep: data.fromStep,
-    toStep: data.toStep
-  })
-  if(result != null && result.length > 0){
-      throw new Error(' Luồng đã tồn tại');
+  const result = await WorkflowTransition.find(dataTransition)
+  console.log(result)
+  if(result?.length != 0){
+      throw new Error(' Luồng  đã tồn tại');
   }
   const workFlowContransiton = await WorkflowTransition.create(dataTransition);
   return workFlowContransiton
