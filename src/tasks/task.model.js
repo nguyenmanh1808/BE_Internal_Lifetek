@@ -34,9 +34,8 @@ const TaskSchema = new mongoose.Schema(
     startDate: { type: Date, default: Date.now },
 
     status: {
-      type: Number,
-      enum: Object.values(STATUS),
-      default: STATUS.PREPARE,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "WorkflowStep",
     },
     priority: {
       type: Number,
