@@ -7,8 +7,13 @@ exports.createRole = async (data) => {
 };
 
 exports.getRolesByProject = async (projectId) => {
-  return await ProjectRole.find({ projectId }).populate("userIds");
+  return await ProjectRole.find({ projectId })
+    .populate({
+      path: "userIds",
+      select: "userName email", 
+    });
 };
+
 
 exports.updateRole = async (roleId, updateData) => {
   return await ProjectRole.findByIdAndUpdate(roleId, updateData, { new: true });

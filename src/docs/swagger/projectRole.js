@@ -1,25 +1,5 @@
 const projectRoleSwagger = {
-    "/project-role": {
-        get: {
-            summary: "Lấy danh sách vai trò dự án",
-            description: "Trả về danh sách các vai trò trong hệ thống dự án",
-            tags: ["Project Role"],
-            responses: {
-                200: {
-                    description: "Lấy danh sách vai trò thành công",
-                    content: {
-                        "application/json": {
-                            schema: {
-                                type: "array",
-                                items: { $ref: "#/components/schemas/ProjectRole" },
-                            },
-                        },
-                    },
-                },
-                500: { description: "Lỗi server" },
-            },
-        },
-
+    "/project-roles": { // Đổi base path cho rõ ràng hơn, ví dụ /api/project-roles
         post: {
             summary: "Tạo vai trò dự án mới",
             description: "API tạo mới một vai trò trong hệ thống dự án",
@@ -41,40 +21,47 @@ const projectRoleSwagger = {
                         },
                     },
                 },
+                400: { description: "Dữ liệu không hợp lệ hoặc thiếu projectId/roleName" },
                 500: { description: "Lỗi server" },
             },
         },
-    },
-
-    "/project-role/{id}": {
-        get: {
-            summary: "Lấy chi tiết vai trò theo ID",
+        delete: {
+            summary: "Xoá nhiều vai trò theo danh sách ID",
             tags: ["Project Role"],
-            parameters: [{
-                in: "path",
-                name: "id",
+            requestBody: {
                 required: true,
-                schema: { type: "string" },
-                description: "ID vai trò",
-            }],
-            responses: {
-                200: {
-                    description: "Lấy chi tiết thành công",
-                    content: {
-                        "application/json": { schema: { $ref: "#/components/schemas/ProjectRole" } },
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: "object",
+                            properties: {
+                                roleIds: {
+                                    type: "array",
+                                    items: { type: "string" },
+                                    description: "Danh sách ID của các vai trò cần xoá",
+                                    example: ["662cd76510bc4d11e4e33abc", "662cd76510bc4d11e4e33abd"]
+                                }
+                            },
+                            required: ["roleIds"]
+                        }
                     },
                 },
-                404: { description: "Không tìm thấy vai trò" },
+            },
+            responses: {
+                200: { description: "Xoá thành công nhiều vai trò" },
+                400: { description: "roleIds phải là mảng và không được rỗng" },
                 500: { description: "Lỗi server" },
             },
-        },
+        }
+    },
 
+    "/project-roles/{roleId}": {
         put: {
             summary: "Cập nhật vai trò theo ID",
             tags: ["Project Role"],
             parameters: [{
                 in: "path",
-                name: "id",
+                name: "roleId",
                 required: true,
                 schema: { type: "string" },
                 description: "ID vai trò",
@@ -83,36 +70,27 @@ const projectRoleSwagger = {
                 required: true,
                 content: {
                     "application/json": {
-                        schema: { $ref: "#/components/schemas/ProjectRoleInput" },
+                        schema: { $ref: "#/components/schemas/ProjectRoleInput" }, // Có thể chỉ cho phép cập nhật một số trường
                     },
                 },
             },
             responses: {
-                200: { description: "Cập nhật thành công" },
-                404: { description: "Không tìm thấy vai trò" },
-                500: { description: "Lỗi server" },
-            },
-        },
-
-        delete: {
-            summary: "Xoá vai trò theo ID",
-            tags: ["Project Role"],
-            parameters: [{
-                in: "path",
-                name: "id",
-                required: true,
-                schema: { type: "string" },
-                description: "ID vai trò",
-            }],
-            responses: {
-                200: { description: "Xoá thành công" },
+                200: {
+                    description: "Cập nhật thành công",
+                    content: {
+                        "application/json": {
+                            schema: { $ref: "#/components/schemas/ProjectRole" },
+                        },
+                    },
+                },
+                400: { description: "Dữ liệu không hợp lệ" },
                 404: { description: "Không tìm thấy vai trò" },
                 500: { description: "Lỗi server" },
             },
         },
     },
 
-    "/project-role/project/{projectId}": {
+    "/project-roles/project/{projectId}": {
         get: {
             summary: "Lấy danh sách vai trò theo Project ID",
             tags: ["Project Role"],
@@ -138,10 +116,17 @@ const projectRoleSwagger = {
         },
     },
 
-    "/project-role/batch-add-users": {
+    "/project-roles/{roleId}/add-users": {
         post: {
-            summary: "Thêm nhiều user vào project với role",
+            summary: "Thêm người dùng vào một vai trò cụ thể",
             tags: ["Project Role"],
+            parameters: [{
+                in: "path",
+                name: "roleId",
+                required: true,
+                schema: { type: "string" },
+                description: "ID của vai trò cần thêm người dùng vào",
+            }],
             requestBody: {
                 required: true,
                 content: {
@@ -149,46 +134,65 @@ const projectRoleSwagger = {
                         schema: {
                             type: "object",
                             properties: {
-                                userIds: { type: "array", items: { type: "string" } },
-                                projectId: { type: "string" },
-                                role: { type: "string" },
+                                userIds: {
+                                    type: "array",
+                                    items: { type: "string", example: "67d7e3a525c545eee5f3380c" },
+                                    description: "Danh sách ID của người dùng cần thêm",
+                                },
                             },
-                            required: ["userIds", "projectId", "role"],
+                            required: ["userIds"],
                         },
                     },
                 },
             },
             responses: {
-                201: { description: "Thêm user thành công" },
-                400: { description: "Thiếu dữ liệu" },
+                200: {
+                    description: "Thêm người dùng vào vai trò thành công",
+                    content: {
+                        "application/json": {
+                            schema: { $ref: "#/components/schemas/ProjectRole" },
+                        },
+                    },
+                },
+                400: { description: "Dữ liệu không hợp lệ hoặc Role ID không hợp lệ" },
+                404: { description: "Không tìm thấy vai trò" },
                 500: { description: "Lỗi server" },
             },
         },
     },
-
-    "/project-role/{projectId}/{userId}": {
-        delete: {
-            summary: "Xoá vai trò user trong project",
+    "/project-roles/{roleId}/remove-users": {
+        delete: { // HTTP method nên là DELETE hoặc POST nếu body phức tạp
+            summary: "Xoá người dùng khỏi một vai trò cụ thể",
             tags: ["Project Role"],
-            parameters: [
-                {
-                    in: "path",
-                    name: "projectId",
-                    required: true,
-                    schema: { type: "string" },
-                    description: "ID dự án",
+            parameters: [{
+                in: "path",
+                name: "roleId",
+                required: true,
+                schema: { type: "string" },
+                description: "ID của vai trò cần xoá người dùng",
+            }],
+            requestBody: {
+                required: true,
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: "object",
+                            properties: {
+                                userIds: {
+                                    type: "array",
+                                    items: { type: "string", example: "67d7e3a525c545eee5f3380c" },
+                                    description: "Danh sách ID của người dùng cần xoá",
+                                },
+                            },
+                            required: ["userIds"],
+                        },
+                    },
                 },
-                {
-                    in: "path",
-                    name: "userId",
-                    required: true,
-                    schema: { type: "string" },
-                    description: "ID user",
-                },
-            ],
+            },
             responses: {
-                200: { description: "Xoá thành công" },
-                404: { description: "Không tìm thấy user role" },
+                200: { description: "Xoá người dùng khỏi vai trò thành công" },
+                400: { description: "Dữ liệu không hợp lệ hoặc Role ID không hợp lệ" },
+                404: { description: "Không tìm thấy vai trò" },
                 500: { description: "Lỗi server" },
             },
         },
