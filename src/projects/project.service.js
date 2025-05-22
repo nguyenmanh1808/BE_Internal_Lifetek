@@ -228,7 +228,6 @@ exports.fetchCountTaskInProject = async (userId, projectId) => {
     const count = await taskModel.countDocuments({
       projectId, // Lọc theo projectId
       assigneeId: userId, // Kiểm tra userId có trong mảng assigneeId
-      status: { $nin: [5, 6] } // Loại trừ status 5 và 6
     });
     return count;
   } catch (error) {

@@ -5,11 +5,6 @@ const workflowStepSchema = new Schema({
   workflowId: { type: Schema.Types.ObjectId, ref: 'Workflow', required: true }, // Gắn với 1 workflow cụ thể
   nameStep: { type: String, required: true },               // Tên bước (VD: 'Soạn thảo', 'Duyệt', ...)
   stepOrder: { type: Number, required: true },          // Thứ tự bước trong workflow
-  requiredRole: [{
-        type: Number,
-        enum: Object.values(ROLES),
-        default: ROLES.USER,
-      }], // Vai trò được phép thực hiện bước
   isFinal: { type: Boolean, default: false }            // Bước kết thúc (true nếu là bước cuối)
 });
 

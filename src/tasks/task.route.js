@@ -24,4 +24,5 @@ routerTask.post("/:taskId/add-user", taskController.addUserToTaskController);
 routerTask.post("/filter/:projectId", taskController.filterTaskController);
 routerTask.get("/search/:projectId", taskController.searchTaskByTitle);
 routerTask.post("/:taskId/update-type", taskController.updateType);
+
 module.exports = routerTask;

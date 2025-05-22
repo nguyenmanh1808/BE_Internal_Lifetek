@@ -25,7 +25,7 @@ exports.createTaskValidator = Joi.object({
     assignerId: Joi.string().messages({
         "string.empty": "assigneeId không được để trống",
     }),
-    status: Joi.number().valid(...Object.values(STATUS)).messages({
+    status: Joi.string().messages({
         "string.empty": "Trạng thái không được để trống",
         "any.only": "Trạng thái không hợp lệ ",
     }),
