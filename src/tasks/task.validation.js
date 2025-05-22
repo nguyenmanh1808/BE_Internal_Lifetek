@@ -83,12 +83,7 @@ exports.updateTaskValidator = Joi.object({
     "string.empty": "assignerId không được để trống",
     "any.required": "assignerId là bắt buộc",
   }),
-  status: Joi.number()
-    .valid(...Object.values(STATUS))
-    .messages({
-      "string.empty": "Trạng thái không được để trống",
-      "any.only": "Trạng thái không hợp lệ",
-    }),
+
   priority: Joi.number()
     .valid(...Object.values(PRIORITY))
     .messages({
