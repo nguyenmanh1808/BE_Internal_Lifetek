@@ -339,34 +339,47 @@ exports.updateTask = async (req, res, next) => {
   try {
     const id = req.task._id;
     const dataBody = req.body;
-    if (typeof dataBody.assigneeId === "string") {
-      dataBody.assigneeId = dataBody.assigneeId.split(",");
-    }
 
-    const invalidAssigneeId = dataBody.assigneeId.filter(
-      (id) => !mongoose.Types.ObjectId.isValid(id)
-    );
-    if (invalidAssigneeId.length > 0) {
-      return next(new Error("Id của assignee không hợp lệ"));
-    }
+    // Kiểm tra và xử lý assigneeId
+    if (dataBody.assigneeId !== undefined) { // Chỉ xử lý nếu assigneeId được cung cấp
+      if (typeof dataBody.assigneeId === "string") {
+        dataBody.assigneeId = dataBody.assigneeId.split(",").map(item => item.trim()).filter(item => item); // Tách chuỗi, trim và loại bỏ phần tử rỗng
+      }
 
-    // kiểm tra id của assignee có id nào trong bẳng user không
-    const assigneeIds = dataBody.assigneeId;
-    const assigneeIdsFromDB = await taskService.checkAssigneeId(assigneeIds);
-    if (assigneeIdsFromDB.length !== assigneeIds.length) {
-      return next(new Error("người được giao nhiệm vụ không hợp lệ"));
-    }
+      // Đảm bảo assigneeId là một mảng trước khi filter và các kiểm tra khác
+      if (Array.isArray(dataBody.assigneeId)) {
+        if (dataBody.assigneeId.length > 0) { // Chỉ kiểm tra nếu mảng không rỗng
+          const invalidAssigneeId = dataBody.assigneeId.filter(
+            (id) => !mongoose.Types.ObjectId.isValid(id)
+          );
+          if (invalidAssigneeId.length > 0) {
+            return next(new Error("Một hoặc nhiều Id của assignee không hợp lệ"));
+          }
 
-    if (!mongoose.Types.ObjectId.isValid(dataBody.assignerId)) {
-      return next(new Error("Id của assigner không hợp lệ"));
-    }
+          // kiểm tra id của assignee có id nào trong bảng user không
+          const assigneeIdsFromDB = await taskService.checkAssigneeId(dataBody.assigneeId);
+          if (assigneeIdsFromDB.length !== dataBody.assigneeId.length) {
+            return next(new Error("Một hoặc nhiều người được giao nhiệm vụ không hợp lệ"));
+          }
+        }
+      } else {
+        // Nếu assigneeId được cung cấp nhưng không phải là string hoặc array (sau khi xử lý string)
+        return next(new Error("assigneeId không hợp lệ, phải là chuỗi hoặc mảng."));
+      }
+    } // Nếu không có assigneeId trong body, bỏ qua các kiểm tra liên quan đến nó
 
-    //kiểm tra id của assigner có id nào trong bảng user không
-    const assignerId = dataBody.assignerId;
-    const assignerIdFromDB = await taskService.checkAssignerId(assignerId);
-    if (!assignerIdFromDB) {
-      return next(new Error("Người giao việc không hợp lệ"));
+    // Kiểm tra assignerId
+    if (dataBody.assignerId !== undefined) { // Chỉ kiểm tra nếu assignerId được cung cấp
+      if (!mongoose.Types.ObjectId.isValid(dataBody.assignerId)) {
+        return next(new Error("Id của assigner không hợp lệ"));
+      }
+      //kiểm tra id của assigner có id nào trong bảng user không
+      const assignerIdFromDB = await taskService.checkAssignerId(dataBody.assignerId);
+      if (!assignerIdFromDB) {
+        return next(new Error("Người giao việc không hợp lệ"));
+      }
     }
+    
     const { error } = taskValidator.updateTaskValidator.validate(dataBody, {
       abortEarly: false,
     });

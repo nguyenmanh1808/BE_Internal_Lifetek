@@ -2,7 +2,8 @@ const workFlow = require('./workflow.model.js')
 const WorkflowStep = require('./workflowStep.model.js')
 const WorkflowTransition = require('./workflowTransition.js')
 exports.getDetailWorkFlowService = async (projectId) => {
-  const workFlowData = await workFlow.find({ projectId });
+  const workFlowData = await workFlow.find({ projectId })
+  console.log(workFlowData)
     return workFlowData
 }
 
