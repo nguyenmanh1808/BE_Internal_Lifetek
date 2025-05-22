@@ -6,11 +6,7 @@ exports.getDetailWorkFlowService = async (projectId) => {
   // const steps = await WorkflowStep.find({ workflow: workFlowData[0]._id }).sort('stepOrder');
   // const transitions = await WorkflowTransition.find({ workflow:  workFlowData[0]._id })
   //   .populate('fromStep toStep allowedRoles');
-  return {
-    workFlowData,
-    // steps,
-    // transitions
-   }
+  return  workFlowData
 
 }
 
