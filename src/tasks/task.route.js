@@ -27,10 +27,7 @@ routerTask
 
 routerTask
   .route("/:taskId")
-  .get(
-    checkProjectPermissions(['View']), // Cần quyền 'View' để xem chi tiết task
-    taskController.getTaskById
-  )
+  .get(taskController.getTaskById) // Bỏ checkProjectPermissions(['View'])
   .put(
     upload.single("image"),
     checkProjectPermissions(['Edit']), // Cần quyền 'Edit' để cập nhật task
@@ -48,8 +45,7 @@ routerTask.put(
 );
 routerTask.get(
   "/project/:projectId",
-  checkProjectPermissions(['View']), // Cần quyền 'View' để xem danh sách task của project
-  taskController.getAllTaskByProject
+  taskController.getAllTaskByProject // Bỏ checkProjectPermissions(['View'])
 );
 routerTask.post(
   "/:taskId/add-user",
@@ -58,13 +54,11 @@ routerTask.post(
 );
 routerTask.post(
   "/filter/:projectId",
-  checkProjectPermissions(['View']), // Cần quyền 'View' để lọc task
-  taskController.filterTaskController
+  taskController.filterTaskController // Bỏ checkProjectPermissions(['View'])
 );
 routerTask.get(
   "/search/:projectId",
-  checkProjectPermissions(['View']), // Cần quyền 'View' để tìm kiếm task
-  taskController.searchTaskByTitle
+  taskController.searchTaskByTitle // Bỏ checkProjectPermissions(['View'])
 );
 routerTask.post(
   "/:taskId/update-type",
