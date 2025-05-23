@@ -3,10 +3,14 @@ const WorkflowStep = require('./workflowStep.model.js')
 const WorkflowTransition = require('./workflowTransition.js')
 exports.getDetailWorkFlowService = async (projectId) => {
   const workFlowData = await workFlow.find({ projectId })
-  // const steps = await WorkflowStep.find({ workflow: workFlowData[0]._id }).sort('stepOrder');
-  // const transitions = await WorkflowTransition.find({ workflow:  workFlowData[0]._id })
-  //   .populate('fromStep toStep allowedRoles');
-  return  workFlowData
+  const steps = await WorkflowStep.find({ workflow: workFlowData[0]._id }).sort('stepOrder');
+  const transitions = await WorkflowTransition.find({ workflow:  workFlowData[0]._id })
+    .populate('fromStep toStep allowedRoles');
+  return  {
+    workFlowData,
+    steps,
+    transitions
+  }
 
 }
 
