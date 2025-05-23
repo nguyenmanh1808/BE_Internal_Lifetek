@@ -40,20 +40,19 @@ const updateTaskStatusService = async (taskId, oldStatus, newStatus, userId, rea
               // Gửi thông báo qua WebSockets
             sendNotification(userId, message);
     }
-             
-  
-    
     })
-  await JobStatusChange.createHistory({
-    taskId,
-    projectId: task.projectId,
-    oldStatus,
-    newStatus,
-    changedBy: userId,
-    reason,
-    notes,
-    changeSource,
-  });
+ 
+    const data = {
+        taskId,
+        projectId: task.projectId,
+        oldStatus,
+        newStatus,
+        changedBy: userId,
+        reason,
+        notes,
+        changeSource,
+    }
+  await JobStatusChange.create(data);
 
   return task;
 };

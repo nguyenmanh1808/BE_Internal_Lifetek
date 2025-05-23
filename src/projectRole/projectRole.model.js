@@ -2,11 +2,9 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const PROJECT_ROLE_PERMISSIONS = [
-  "View",
   "Add",
   "Edit",
   "Delete",
-  "Comment",
 ];
 
 const projectRoleSchema = new Schema({
