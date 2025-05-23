@@ -7,11 +7,13 @@ const SuccessResponse = require("../utils/SuccessResponse.js");
 const PAGINATE = require("../constants/paginate.js");
 const { CHANGE_SOURCE, PERMISSIONS, TYPETASK } = require("../constants/index.js");
 const projectService = require("../projects/project.service.js");
+const projectRoleService = require("../projectRole/projectRole.service.js")
 const workFlowService = require("../workflow/workFlow.service.js")
+const { ObjectId } = require('mongodb');
 /// thay đổi trạng thái
 exports.updateTaskStatus = async (req, res, next) => {
   try {
-    const roleUser = req.user.role;
+   
     const { oldStatus, newStatus } = req.body;
     const userId = req.user._id;
     const { taskId } = req.params;
@@ -19,24 +21,35 @@ exports.updateTaskStatus = async (req, res, next) => {
     if (!oldStatus || !newStatus) {
       return next(new Error("Thiếu trạng thái đầu hoặc cuối"));
     }
-
+  
+  console.log("userId",userId)
     const task = await taskService.FindTaskById(taskId);
+ 
     if (!task) return next(new Error("Không tìm thấy task"));
     const workFlow = await projectService.getProjectById(task.projectId) ;
-    const workflowId = workFlow._id;
-    const fromStep = oldStatus;
-    const toStep = newStatus;
+    
+    const projectRole = await projectRoleService.getRoleUserProject(task.projectId,userId)
+     console.log("projectId",task.projectId)
+    console.log(projectRole)
 
+    const workflowId = workFlow._id;
+    const fromStep = new ObjectId(oldStatus);
+    const toStep = new ObjectId(newStatus);
+   const roleUser = projectRole._id
+   console.log("workflowId",workflowId)
+   console.log("fromStep",fromStep)
+   console.log("toStep",toStep)
     // Kiểm tra quyền theo workflow transition
     const allowed = await workFlowService.canUserTransitionStep(roleUser, workflowId, fromStep, toStep);
+    console.log(allowed)
     if (!allowed) {
       return next(new Error("Bạn không có quyền chuyển trạng thái này"));
     }
 
     const updatedTask = await taskStatusChangeService.updateTaskStatusService(
       taskId,
-      oldStatus,
-      newStatus,
+      fromStep,
+      toStep,
       userId,
       "Theo dõi thay đổi",
       "Tự động khi thay đổi trạng thái",
@@ -50,48 +63,7 @@ exports.updateTaskStatus = async (req, res, next) => {
 };
 
 // thêm user vào task
-// exports.addUserToTaskController = async (req, res, next) => {
-// try {
-//   const { taskId } = req.params;
-//   const { assigneeId } = req.body;
-//   const roleUser = req.user.role;
-//   const checkPermission = PERMISSIONS.ASSIGN_TASK.includes(roleUser);
-//   const projectId = task.projectId;
 
-//   if (!checkPermission) {
-//     return next({
-//       statusCode: 403,
-//       message: "You don't have permission to add user to task",
-//     });
-//   }
-//   if (!assigneeId) {
-//     return next({
-//       statusCode: 400,
-//       message: "AssigneeId is required",
-//     });
-//   }
-
-//   const task = await taskService.getTaskById(taskId);
-//   if (!task) {
-//     return next({
-//       statusCode: 404,
-//       message: "Task not found",
-//     });
-//   }
-
-//   if (task.assigneeId.includes(assigneeId)) {
-//     return next({
-//       statusCode: 400,
-//       message: "Người dùng đã được thêm rồi!!",
-//     });
-//   }
-
-//   const updatedTask = await taskService.addUserToTask(taskId, assigneeId);
-//   return new SuccessResponse(updatedTask).send(res);
-// } catch (error) {
-//   return next(error);
-// }
-// };
 exports.addUserToTaskController = async (req, res, next) => {
   try {
     const { taskId } = req.params;
@@ -265,12 +237,12 @@ exports.searchTaskByTitle = async (req, res, next) => {
 
 exports.addTask = async (req, res, next) => {
   try {
-    const userRole = req?.user?.role;
-    const hasPermission = PERMISSIONS.CREATE_TASK.includes(userRole);
+    // const userRole = req?.user?.role;
+    // const hasPermission = PERMISSIONS.CREATE_TASK.includes(userRole);
 
-    if (!hasPermission) {
-      return next(new Error("Bạn không có quyền thêm task"));
-    }
+    // if (!hasPermission) {
+    //   return next(new Error("Bạn không có quyền thêm task"));
+    // }
 
     const dataBody = req.body;
 
@@ -376,34 +348,47 @@ exports.updateTask = async (req, res, next) => {
   try {
     const id = req.task._id;
     const dataBody = req.body;
-    if (typeof dataBody.assigneeId === "string") {
-      dataBody.assigneeId = dataBody.assigneeId.split(",");
-    }
 
-    const invalidAssigneeId = dataBody.assigneeId.filter(
-      (id) => !mongoose.Types.ObjectId.isValid(id)
-    );
-    if (invalidAssigneeId.length > 0) {
-      return next(new Error("Id của assignee không hợp lệ"));
-    }
+    // Kiểm tra và xử lý assigneeId
+    if (dataBody.assigneeId !== undefined) { // Chỉ xử lý nếu assigneeId được cung cấp
+      if (typeof dataBody.assigneeId === "string") {
+        dataBody.assigneeId = dataBody.assigneeId.split(",").map(item => item.trim()).filter(item => item); // Tách chuỗi, trim và loại bỏ phần tử rỗng
+      }
 
-    // kiểm tra id của assignee có id nào trong bẳng user không
-    const assigneeIds = dataBody.assigneeId;
-    const assigneeIdsFromDB = await taskService.checkAssigneeId(assigneeIds);
-    if (assigneeIdsFromDB.length !== assigneeIds.length) {
-      return next(new Error("người được giao nhiệm vụ không hợp lệ"));
-    }
+      // Đảm bảo assigneeId là một mảng trước khi filter và các kiểm tra khác
+      if (Array.isArray(dataBody.assigneeId)) {
+        if (dataBody.assigneeId.length > 0) { // Chỉ kiểm tra nếu mảng không rỗng
+          const invalidAssigneeId = dataBody.assigneeId.filter(
+            (id) => !mongoose.Types.ObjectId.isValid(id)
+          );
+          if (invalidAssigneeId.length > 0) {
+            return next(new Error("Một hoặc nhiều Id của assignee không hợp lệ"));
+          }
 
-    if (!mongoose.Types.ObjectId.isValid(dataBody.assignerId)) {
-      return next(new Error("Id của assigner không hợp lệ"));
-    }
+          // kiểm tra id của assignee có id nào trong bảng user không
+          const assigneeIdsFromDB = await taskService.checkAssigneeId(dataBody.assigneeId);
+          if (assigneeIdsFromDB.length !== dataBody.assigneeId.length) {
+            return next(new Error("Một hoặc nhiều người được giao nhiệm vụ không hợp lệ"));
+          }
+        }
+      } else {
+        // Nếu assigneeId được cung cấp nhưng không phải là string hoặc array (sau khi xử lý string)
+        return next(new Error("assigneeId không hợp lệ, phải là chuỗi hoặc mảng."));
+      }
+    } // Nếu không có assigneeId trong body, bỏ qua các kiểm tra liên quan đến nó
 
-    //kiểm tra id của assigner có id nào trong bảng user không
-    const assignerId = dataBody.assignerId;
-    const assignerIdFromDB = await taskService.checkAssignerId(assignerId);
-    if (!assignerIdFromDB) {
-      return next(new Error("Người giao việc không hợp lệ"));
+    // Kiểm tra assignerId
+    if (dataBody.assignerId !== undefined) { // Chỉ kiểm tra nếu assignerId được cung cấp
+      if (!mongoose.Types.ObjectId.isValid(dataBody.assignerId)) {
+        return next(new Error("Id của assigner không hợp lệ"));
+      }
+      //kiểm tra id của assigner có id nào trong bảng user không
+      const assignerIdFromDB = await taskService.checkAssignerId(dataBody.assignerId);
+      if (!assignerIdFromDB) {
+        return next(new Error("Người giao việc không hợp lệ"));
+      }
     }
+    
     const { error } = taskValidator.updateTaskValidator.validate(dataBody, {
       abortEarly: false,
     });

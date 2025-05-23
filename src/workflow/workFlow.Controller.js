@@ -65,7 +65,14 @@ exports.deleteWorkflowStep = async (req, res) => {
     res.status(404).json({ message: err.message });
   }
 };
-
+exports.deleteAllWorkflowStep = async(req,res)=>{
+   try {
+    const result = await workFlowService.deleteAllWorkflowStep(req.params.workflowId);
+    res.json(result);
+  } catch (err) {
+    res.status(404).json({ message: err.message });
+  }
+}
 // work flow transition
 exports.getAllWorkflowTransiton = async (req, res, next) => {
   try {
@@ -102,6 +109,14 @@ exports.updateWorkflowTransition = async (req, res) => {
 exports.deleteWorkflowTransition = async (req, res) => {
   try {
     const result = await workFlowService.deleteWorkflowTransition(req.params.WorkflowTransitionId);
+    res.json(result);
+  } catch (err) {
+    res.status(404).json({ message: err.message });
+  }
+}
+exports.deleteAllWorkflowTransition = async (req,res)=>{
+   try {
+    const result = await workFlowService.deleteAllWorkflowTransition(req.params.WorkflowId);
     res.json(result);
   } catch (err) {
     res.status(404).json({ message: err.message });

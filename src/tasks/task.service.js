@@ -185,7 +185,11 @@ exports.getAllTaskByProject = async (role,projectId, skip, limit, userId) => {
     .populate({
       path: "assigneeId",
       select: "userName email avatar",
-    });
+    })
+    .populate({
+      path: "status",
+      select: "nameStep stepOrder",
+    })
   }
   else {
     return await Task.find({
@@ -200,6 +204,10 @@ exports.getAllTaskByProject = async (role,projectId, skip, limit, userId) => {
     .populate({
       path: "assigneeId",
       select: "userName email avatar",
+    })
+    .populate({
+      path: "status",
+      select: "nameStep stepOrder",
     });
   }
 };

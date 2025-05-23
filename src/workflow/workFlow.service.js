@@ -2,41 +2,33 @@ const workFlow = require("./workflow.model.js");
 const WorkflowStep = require("./workflowStep.model.js");
 const WorkflowTransition = require("./workflowTransition.js");
 exports.getDetailWorkFlowService = async (projectId) => {
-  const workFlowData = await workFlow.find({ projectId });
-  return workFlowData;
+  const workFlowData = await workFlow.findOne({ projectId });
+  const Id = workFlowData._id;
+  const steps = await WorkflowStep.find({ workflowId: Id }).sort("stepOrder");
+  const transitions = await WorkflowTransition.find({
+    workflowId: Id,
+  }).populate("fromStep toStep allowedRoles");
+  return {
+    workFlowData,
+    steps,
+    transitions,
+  };
 };
-
-// exports.createWorkflow = async (data) => {
-//   const code = {
-//     projectmanager: data.projectmanager ? data.projectmanager : "",
-//     projectId: data.projectId ? data.projectId : "",
-//   };
-
-//   const existing = await workFlow.find({ projectId: data.projectId });
-//   if (existing.length != 0) throw new Error("Code workflow đã tồn tại");
-//   const workflow = await workFlow.create(code);
-//   return workflow;
-// };
 exports.createWorkflow = async (data) => {
-  console.log("Dữ liệu nhận vào:", data);
-
   const code = {
     projectmanager: data.managerId, // sửa lại đúng tên field từ FE gửi lên
     projectId: data.projectId,
     code: `${data.projectId}`,
   };
 
-  console.log("Dữ liệu chuẩn bị insert:", code);
-
-  const existing = await workFlow.findOne({ projectId: data.projectId });
-  if (existing) throw new Error("Code workflow đã tồn tại");
-
+  const existing = await workFlow.find({ projectId: data.projectId });
+  if (existing.length != 0) throw new Error("Code workflow đã tồn tại");
   const workflow = await workFlow.create(code);
   return workflow;
 };
 
-exports.deleteWorkflow = async (workflowId) => {
-  const workflow = await workFlow.findByIdAndDelete(workflowId);
+exports.deleteAllWorkflowTransition = async (workflowId) => {
+  await WorkflowTransition.deleteMany({ workflowId });
   return { message: "Đã xoá workflow và dữ liệu liên quan" };
 };
 
@@ -73,10 +65,16 @@ exports.deleteWorkflowStep = async (workflowStepId) => {
   await WorkflowStep.findByIdAndDelete(workflowStepId);
   return { message: "Đã xoá workflow và dữ liệu liên quan" };
 };
+exports.deleteAllWorkflowStep = async (workflowId) => {
+  await WorkflowStep.deleteMany({ workflowId });
+  return { message: "Đã xoá workflow và dữ liệu liên quan" };
+};
 
 //workflow contrans
 exports.getAllWorkFlowTransition = async (workflowId) => {
-  const workFlowTransitionData = await WorkflowTransition.find({ workflowId });
+  const workFlowTransitionData = await WorkflowTransition.find({
+    workflowId: workflowId,
+  });
   if (!workFlowTransitionData) throw new Error("Không tìm thấy workflow");
   return workFlowTransitionData;
 };
@@ -85,14 +83,23 @@ exports.createWorkFlowTransition = async (data) => {
     workflowId: data.workflowId,
     fromStep: data.fromStep,
     toStep: data.toStep,
-    allowedRoles: data.requiredRole,
+    allowedRoles: data.allowedRoles,
   };
-
+  const result = await WorkflowTransition.find(dataTransition);
+  console.log(result);
+  if (result?.length != 0) {
+    throw new Error(" Luồng  đã tồn tại");
+  }
   const workFlowContransiton = await WorkflowTransition.create(dataTransition);
   return workFlowContransiton;
 };
 
 exports.updateWorkflowTransition = async (id, data) => {
+  const result = await WorkflowTransition.find(data);
+  console.log("data", data);
+  if (result?.length != 0) {
+    throw new Error(" Luồng  đã tồn tại");
+  }
   const updateWorkflowTransition = await WorkflowTransition.findByIdAndUpdate(
     id,
     data,
@@ -103,7 +110,6 @@ exports.updateWorkflowTransition = async (id, data) => {
 };
 
 exports.deleteWorkflowTransition = async (id) => {
-  console.log(id);
   await WorkflowTransition.findByIdAndDelete(id);
   return { message: "Đã xoá workflow và dữ liệu liên quan" };
 };
@@ -121,6 +127,6 @@ exports.canUserTransitionStep = async (
     toStep,
     allowedRoles: userRole,
   });
-
+  console.log("transition", transition);
   return !!transition; // true nếu tồn tại transition hợp lệ
 };

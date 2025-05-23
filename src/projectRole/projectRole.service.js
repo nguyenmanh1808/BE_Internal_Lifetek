@@ -1,70 +1,51 @@
-const ProjectRole = require("./projectRole.model.js");
+const ProjectRole = require("./projectRole.model");
+const mongoose = require('mongoose');
 
-const createProjectRole = async (data) => {
-  const projectRole = new ProjectRole(data);
-  return await projectRole.save();
+
+exports.createRole = async (data) => {
+  return await ProjectRole.create(data);
 };
 
-const batchAddUsersToProject = async (userIds, projectId, role) => {
-  const roles = userIds.map(userId => ({
-    userId,
-    projectId,
-    role,
-  }));
-
-  return await ProjectRole.insertMany(roles);
+exports.getRolesByProject = async (projectId) => {
+  return await ProjectRole.find({ projectId })
+    .populate({
+      path: "userIds",
+      select: "userName email", 
+    });
 };
 
-const getAllProjectRoles = async () => {
-  return await ProjectRole.find().populate("userId").populate("projectId");
+
+exports.updateRole = async (roleId, updateData) => {
+  return await ProjectRole.findByIdAndUpdate(roleId, updateData, { new: true });
 };
 
-const getProjectRoleById = async (id) => {
-  return await ProjectRole.findById(id).populate("userId").populate("projectId");
+exports.deleteRoles = async (roleIds) => {
+  return await ProjectRole.deleteMany({ _id: { $in: roleIds } });
 };
 
-const updateProjectRole = async (id, data) => {
-  return await ProjectRole.findByIdAndUpdate(id, data, { new: true });
+
+exports.addUsersToRole = async (roleId, userIds) => {
+  return await ProjectRole.findByIdAndUpdate(
+    roleId,
+    { $addToSet: { userIds: { $each: userIds } } },
+    { new: true }
+  );
 };
 
-const deleteProjectRole = async (id) => {
-  return await ProjectRole.findByIdAndDelete(id);
-};
-
-const getProjectById = async (projectId) => {
-  try {
-    // Tìm tất cả ProjectRole với projectId, sau đó populate userId
-    const projectRoles = await ProjectRole.find({ projectId })
-      .populate('userId', 'name email');  // Populate các trường của User (ví dụ: name và email)
-
-    if (!projectRoles || projectRoles.length === 0) {
-      throw new Error("Project not found");
-    }
-    
-    return projectRoles;  // Trả về các vai trò của dự án
-  } catch (error) {
-    throw error;
+exports.removeUsersFromRole = async (roleId, userIds) => {
+  if (!mongoose.Types.ObjectId.isValid(roleId)) {
+    throw new Error('Role ID không hợp lệ');
   }
-};
-
-const removeUserRoleInProject = async (userId, projectId) => {
-  try {
-    // Tìm và xoá vai trò của user trong dự án
-    const result = await ProjectRole.findOneAndDelete({ userId, projectId });
-
-    return result;  // Trả về kết quả (hoặc null nếu không tìm thấy)
-  } catch (error) {
-    throw new Error('Error while removing user role in project');
+  if (!Array.isArray(userIds) || userIds.length === 0) {
+    throw new Error('Danh sách userIds không hợp lệ');
   }
-};
 
-module.exports = {
-  createProjectRole,
-  getAllProjectRoles,
-  getProjectRoleById,
-  updateProjectRole,
-  deleteProjectRole,
-  batchAddUsersToProject,
-  getProjectById,
-  removeUserRoleInProject,
+  return await ProjectRole.findByIdAndUpdate(
+    roleId,
+    { $pull: { userIds: { $in: userIds } } },
+    { new: true }
+  );
 };
+exports.getRoleUserProject = async(projectId, userId)=>{
+  return await ProjectRole.findOne({projectId:projectId, userIds: userId});
+}

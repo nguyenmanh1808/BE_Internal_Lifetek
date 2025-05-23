@@ -6,7 +6,12 @@ const projectRoleSchema = {
         type: "string",
         example: "662cd76510bc4d11e4e33abc",
       },
-      name: {
+      projectId: {
+        type: "string",
+        description: "ID của dự án mà vai trò này thuộc về",
+        example: "68231469daf586f00db77f5d",
+      },
+      roleName: {
         type: "string",
         example: "Project Manager",
       },
@@ -14,12 +19,19 @@ const projectRoleSchema = {
         type: "string",
         example: "Quản lý tổng thể dự án",
       },
-      permissions: {
+      userIds: {
         type: "array",
         items: {
           type: "string",
+          example: "67d7e3a525c545eee5f3380c",
         },
-        example: ["create_task", "update_task", "assign_user"],
+        description: "Danh sách ID của người dùng thuộc vai trò này",
+      },
+      permissions: {
+        type: "array",
+        items: { type: "string", enum: ["View", "Add", "Edit", "Delete", "Comment"] },
+        example: ["View", "Add"],
+        description: "Các quyền của vai trò trong dự án. Các giá trị hợp lệ: View, Add, Edit, Delete, Comment.",
       },
     },
   },
@@ -27,7 +39,12 @@ const projectRoleSchema = {
     type: "object",
     required: ["name"],
     properties: {
-      name: {
+      projectId: {
+        type: "string",
+        description: "ID của dự án mà vai trò này sẽ được tạo cho (bắt buộc khi tạo mới)",
+        example: "68231469daf586f00db77f5d",
+      },
+      roleName: {
         type: "string",
         example: "Developer",
       },
@@ -37,10 +54,9 @@ const projectRoleSchema = {
       },
       permissions: {
         type: "array",
-        items: {
-          type: "string",
-        },
-        example: ["view_task", "edit_task"],
+        items: { type: "string", enum: ["View", "Add", "Edit", "Delete", "Comment"] },
+        example: ["View", "Comment"],
+        description: "Các quyền của vai trò trong dự án. Các giá trị hợp lệ: View, Add, Edit, Delete, Comment.",
       },
     },
   },

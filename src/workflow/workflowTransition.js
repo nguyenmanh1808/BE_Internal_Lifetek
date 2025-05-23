@@ -7,9 +7,9 @@ const workflowTransitionSchema = new Schema({
   fromStep: { type: Schema.Types.ObjectId, ref: 'WorkflowStep', required: true }, // Bước hiện tại
   toStep: { type: Schema.Types.ObjectId, ref: 'WorkflowStep', required: true },   // Bước có thể chuyển tới
   allowedRoles: [{
-        type: Number,
-        enum: Object.values(ROLES),
-        default: ROLES.USER,
+    type: Schema.Types.ObjectId,
+    ref: 'ProjectRole',
+    required: true
       }], // Vai trò được phép thực hiện chuyển bước
   isDefault: { type: Boolean, default: false } // Có phải là chuyển bước mặc định không (nếu tự động hóa)
 });
