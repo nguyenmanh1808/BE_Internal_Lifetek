@@ -1,24 +1,25 @@
-// webpack.config.js
 const path = require('path');
 const nodeExternals = require('webpack-node-externals');
+const Dotenv = require('dotenv-webpack');
 
 module.exports = {
-  entry: './src/server.js', // file khởi động chính
-  target: 'node', // vì build cho Node.js
-  mode: 'production', // hoặc 'development' nếu debug
+  entry: './src/server.js',
+  target: 'node',
+  mode: 'production',
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'bundle.js',
   },
-  externals: [nodeExternals()], // bỏ qua node_modules khi đóng gói
+  externals: [nodeExternals()],
+  plugins: [
+    new Dotenv() // Load biến môi trường từ file .env
+  ],
   module: {
     rules: [
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader', // nếu bạn cần xử lý mã ES6+
-        },
+        use: 'babel-loader',
       },
     ],
   },

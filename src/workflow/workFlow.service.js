@@ -2,9 +2,10 @@ const workFlow = require('./workflow.model.js')
 const WorkflowStep = require('./workflowStep.model.js')
 const WorkflowTransition = require('./workflowTransition.js')
 exports.getDetailWorkFlowService = async (projectId) => {
-  const workFlowData = await workFlow.find({ projectId })
-  const steps = await WorkflowStep.find({ workflow: workFlowData[0]._id }).sort('stepOrder');
-  const transitions = await WorkflowTransition.find({ workflow:  workFlowData[0]._id })
+  const workFlowData = await workFlow.findOne({ projectId })
+  const Id = workFlowData._id ;
+  const steps = await WorkflowStep.find({ workflowId :Id }).sort('stepOrder');
+  const transitions = await WorkflowTransition.find({ workflowId:  Id })
     .populate('fromStep toStep allowedRoles');
   return  {
     workFlowData,
@@ -111,7 +112,7 @@ exports.deleteWorkflowTransition = async (id) => {
 /// checkeck quyền thay đổi status
 exports.canUserTransitionStep = async (userRole, workflowId, fromStep, toStep) =>{
   const transition = await WorkflowTransition.findOne({
-  
+    workflowId,
     fromStep,
     toStep,
     allowedRoles: userRole
