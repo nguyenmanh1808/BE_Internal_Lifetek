@@ -14,8 +14,6 @@ exports.getDetailWorkFlowService = async (projectId) => {
   }
 
 }
-
-
 exports.createWorkflow = async (data) => {
   const   code = {
     projectmanager: data.managerId, // sửa lại đúng tên field từ FE gửi lên

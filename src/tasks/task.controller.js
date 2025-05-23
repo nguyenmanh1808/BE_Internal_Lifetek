@@ -237,12 +237,12 @@ exports.searchTaskByTitle = async (req, res, next) => {
 
 exports.addTask = async (req, res, next) => {
   try {
-    const userRole = req?.user?.role;
-    const hasPermission = PERMISSIONS.CREATE_TASK.includes(userRole);
+    // const userRole = req?.user?.role;
+    // const hasPermission = PERMISSIONS.CREATE_TASK.includes(userRole);
 
-    if (!hasPermission) {
-      return next(new Error("Bạn không có quyền thêm task"));
-    }
+    // if (!hasPermission) {
+    //   return next(new Error("Bạn không có quyền thêm task"));
+    // }
 
     const dataBody = req.body;
 
