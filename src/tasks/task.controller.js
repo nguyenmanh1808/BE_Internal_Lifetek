@@ -23,8 +23,10 @@ exports.updateTaskStatus = async (req, res, next) => {
   
 
     const task = await taskService.FindTaskById(taskId);
+ 
     if (!task) return next(new Error("Không tìm thấy task"));
     const workFlow = await projectService.getProjectById(task.projectId) ;
+    console.log(workFlow)
     const projectRole = await projectRoleService.getRoleUserProject(task.projectId,userId)
     const workflowId = workFlow._id;
     const fromStep = oldStatus;
