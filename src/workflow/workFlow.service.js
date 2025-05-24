@@ -44,10 +44,9 @@ exports.getAllWorkFlowStep= async (workflowId) => {
 }
 exports.createWorkFlowStep = async (data) => {
   const dataStep = {
-    workflowId: workFlow._id,
+    workflowId: data.workflowId,
     nameStep: data.nameStep,
     stepOrder: data.stepOrder,
-    requiredRole: data.requiredRole,
     isFinal: data.isFinal
   }
   const workFlowStep = await WorkflowStep.create(dataStep);
@@ -89,7 +88,7 @@ exports.createWorkFlowTransition = async (data) => {
   const workFlowContransiton = await WorkflowTransition.create(dataTransition);
   return workFlowContransiton
 }
-
+ 
 exports.updateWorkflowTransition = async (id,data) => {
   const result = await WorkflowTransition.find(data);
   console.log('data',data)
