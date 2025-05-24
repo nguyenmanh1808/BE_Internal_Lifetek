@@ -46,8 +46,9 @@ exports.createWorkFlowStep = async (data) => {
     workflowId: data.workflowId,
     nameStep: data.nameStep,
     stepOrder: data.stepOrder,
-    isFinal: data.isFinal,
-  };
+    requiredRole: data.requiredRole,
+    isFinal: data.isFinal
+  }
   const workFlowStep = await WorkflowStep.create(dataStep);
 
   return workFlowStep;
@@ -91,10 +92,10 @@ exports.createWorkFlowTransition = async (data) => {
     throw new Error(" Luồng  đã tồn tại");
   }
   const workFlowContransiton = await WorkflowTransition.create(dataTransition);
-  return workFlowContransiton;
-};
+  return workFlowContransiton
+}
 
-exports.updateWorkflowTransition = async (id, data) => {
+exports.updateWorkflowTransition = async (id,data) => {
   const result = await WorkflowTransition.find(data);
   console.log("data", data);
   if (result?.length != 0) {

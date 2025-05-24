@@ -27,16 +27,16 @@ exports.updateTaskStatus = async (req, res, next) => {
  
     if (!task) return next(new Error("Không tìm thấy task"));
     const workFlow = await workFlowService.getDetailWorkFlowService(task.projectId) ;
-    
     const projectRole = await projectRoleService.getRoleUserProject(task.projectId,userId)
      console.log("projectId",task.projectId)
     console.log(projectRole)
 
-    const workflowId = workFlow._id;
+    const workflowId = workFlow.workFlowData._id;
+   
     const fromStep = new ObjectId(oldStatus);
     const toStep = new ObjectId(newStatus);
-   const roleUser = projectRole._id
-   console.log("workflowId",workflowId)
+   const roleUser = projectRole._id;
+  
    console.log("fromStep",fromStep)
    console.log("toStep",toStep)
     // Kiểm tra quyền theo workflow transition
