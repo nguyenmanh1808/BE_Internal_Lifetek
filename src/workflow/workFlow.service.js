@@ -41,11 +41,11 @@ exports.getAllWorkFlowStep = async (workflowId) => {
   return workFlowStepData;
 };
 exports.createWorkFlowStep = async (data) => {
+  console.log("createWorkFlowStep nhận data:", data);
   const dataStep = {
     workflowId: data.workflowId,
     nameStep: data.nameStep,
     stepOrder: data.stepOrder,
-    requiredRole: data.requiredRole,
     isFinal: data.isFinal,
   };
   const workFlowStep = await WorkflowStep.create(dataStep);
