@@ -46,3 +46,6 @@ exports.removeUsersFromRole = async (roleId, userIds) => {
     { new: true }
   );
 };
+exports.getRoleUserProject = async(projectId, userId)=>{
+  return await ProjectRole.findOne({projectId:projectId, userIds: userId});
+}

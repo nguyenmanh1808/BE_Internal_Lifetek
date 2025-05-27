@@ -9,6 +9,7 @@ const { CHANGE_SOURCE, PERMISSIONS, TYPETASK } = require("../constants/index.js"
 const projectService = require("../projects/project.service.js");
 const projectRoleService = require("../projectRole/projectRole.service.js")
 const workFlowService = require("../workflow/workFlow.service.js")
+const { ObjectId } = require('mongodb');
 /// thay đổi trạng thái
 exports.updateTaskStatus = async (req, res, next) => {
   try {
@@ -21,26 +22,34 @@ exports.updateTaskStatus = async (req, res, next) => {
       return next(new Error("Thiếu trạng thái đầu hoặc cuối"));
     }
   
-
+  console.log("userId",userId)
     const task = await taskService.FindTaskById(taskId);
+ 
     if (!task) return next(new Error("Không tìm thấy task"));
-    const workFlow = await projectService.getProjectById(task.projectId) ;
+    const workFlow = await workFlowService.getDetailWorkFlowService(task.projectId) ;
     const projectRole = await projectRoleService.getRoleUserProject(task.projectId,userId)
-    const workflowId = workFlow._id;
-    const fromStep = oldStatus;
-    const toStep = newStatus;
+     console.log("projectId",task.projectId)
+    console.log(projectRole)
+
+    const workflowId = workFlow.workFlowData._id;
    
+    const fromStep = new ObjectId(oldStatus);
+    const toStep = new ObjectId(newStatus);
+   const roleUser = projectRole._id;
+  
+   console.log("fromStep",fromStep)
+   console.log("toStep",toStep)
     // Kiểm tra quyền theo workflow transition
-    const allowed = await workFlowService.canUserTransitionStep(projectRole.role, workflowId, fromStep, toStep);
-    console.log("allowed",allowed)
+    const allowed = await workFlowService.canUserTransitionStep(roleUser, workflowId, fromStep, toStep);
+    console.log(allowed)
     if (!allowed) {
       return next(new Error("Bạn không có quyền chuyển trạng thái này"));
     }
 
     const updatedTask = await taskStatusChangeService.updateTaskStatusService(
       taskId,
-      oldStatus,
-      newStatus,
+      fromStep,
+      toStep,
       userId,
       "Theo dõi thay đổi",
       "Tự động khi thay đổi trạng thái",
@@ -228,12 +237,12 @@ exports.searchTaskByTitle = async (req, res, next) => {
 
 exports.addTask = async (req, res, next) => {
   try {
-    const userRole = req?.user?.role;
-    const hasPermission = PERMISSIONS.CREATE_TASK.includes(userRole);
+    // const userRole = req?.user?.role;
+    // const hasPermission = PERMISSIONS.CREATE_TASK.includes(userRole);
 
-    if (!hasPermission) {
-      return next(new Error("Bạn không có quyền thêm task"));
-    }
+    // if (!hasPermission) {
+    //   return next(new Error("Bạn không có quyền thêm task"));
+    // }
 
     const dataBody = req.body;
 

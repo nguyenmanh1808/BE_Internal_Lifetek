@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const express = require("express");
 const http = require("http");
 const env = require("./config/env.js");
@@ -12,7 +14,6 @@ const { initSocket } = require("./socket.js");
 
 const app = express();
 
-
 // thông báo thời gian thực
 const server = http.createServer(app); // Tạo server HTTP
 initSocket(server); // Khởi tạo socket.io
@@ -24,7 +25,7 @@ connectRedis();
 
 app.use(
   cors({
-    origin: "*",  // Chấp nhận tất cả các nguồn
+    origin: "*", // Chấp nhận tất cả các nguồn
     credentials: true,
   })
 );
@@ -32,7 +33,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/api/v1", router)
+app.use("/api/v1", router);
 swaggerDocs(app);
 
 //middleware xử lý lỗi
@@ -44,4 +45,3 @@ app.use(ErrorMiddleware.errorHandle); // xử lý lỗi chung
 server.listen(PORT, "0.0.0.0", () => {
   console.log(`Server đang chạy tại ${process.env.BASE_URL}`);
 });
-

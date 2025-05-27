@@ -18,31 +18,32 @@ exports.createTaskValidator = Joi.object({
     "string.empty": "projectId không được để trống",
     "any.required": "projectId là bắt buộc",
   }),
-    assigneeId: Joi.array().items(Joi.objectId()).messages({
-        "string.empty": "assignerId không được để trống",
-        "any.required": "assignerId là bắt buộc",
+  assigneeId: Joi.array().items(Joi.objectId()).messages({
+    "string.empty": "assignerId không được để trống",
+    "any.required": "assignerId là bắt buộc",
+  }),
+  assignerId: Joi.string().messages({
+    "string.empty": "assigneeId không được để trống",
+  }),
+  status: Joi.string().messages({
+    "string.empty": "Trạng thái không được để trống",
+    "any.only": "Trạng thái không hợp lệ ",
+  }),
+  priority: Joi.number()
+    .valid(...Object.values(PRIORITY))
+    .messages({
+      "string.empty": "Mức độ ưu tiên không được để trống",
+      "any.only": "Mức độ ưu tiên không hợp lệ",
     }),
-    assignerId: Joi.string().messages({
-        "string.empty": "assigneeId không được để trống",
-    }),
-    status: Joi.number().valid(...Object.values(STATUS)).messages({
-        "string.empty": "Trạng thái không được để trống",
-        "any.only": "Trạng thái không hợp lệ ",
-    }),
-    priority: Joi.number()
-    .valid(...Object.values(PRIORITY)).messages({
-    "string.empty": "Mức độ ưu tiên không được để trống",
-    "any.only": "Mức độ ưu tiên không hợp lệ",
-    }),
-    type: Joi.string().messages({
+  type: Joi.string().messages({
     "string.empty": "Loại công việc không được để trống",
     "any.required": "Loại công việc là bắt buộc",
   }),
-  image: Joi.string().optional().allow(null, '').messages({
+  image: Joi.string().optional().allow(null, "").messages({
     "string.base": "Hình ảnh không hợp lệ",
   }),
-  
-  link: Joi.string().optional().allow(null, '').messages({
+
+  link: Joi.string().optional().allow(null, "").messages({
     "string.base": "Link không hợp lệ",
   }),
   // image: Joi.string().uri().messages({
@@ -83,25 +84,20 @@ exports.updateTaskValidator = Joi.object({
     "string.empty": "assignerId không được để trống",
     "any.required": "assignerId là bắt buộc",
   }),
-  status: Joi.number()
-    .valid(...Object.values(STATUS))
-    .messages({
-      "string.empty": "Trạng thái không được để trống",
-      "any.only": "Trạng thái không hợp lệ",
-    }),
+
   priority: Joi.number()
     .valid(...Object.values(PRIORITY))
     .messages({
       "string.empty": "Mức độ ưu tiên không được để trống",
       "any.only": "Mức độ ưu tiên không hợp lệ",
     }),
-    image: Joi.string().optional().allow(null, '').messages({
-      "string.base": "Hình ảnh không hợp lệ",
-    }),
-    
-    link: Joi.string().optional().allow(null, '').messages({
-      "string.base": "Link không hợp lệ",
-    }),
+  image: Joi.string().optional().allow(null, "").messages({
+    "string.base": "Hình ảnh không hợp lệ",
+  }),
+
+  link: Joi.string().optional().allow(null, "").messages({
+    "string.base": "Link không hợp lệ",
+  }),
   // images: Joi.string().uri().optional().messages({
   //   "string.empty": "Hình ảnh không được để trống",
   //   "string.uri": "Hình ảnh không hợp lệ",
@@ -115,5 +111,4 @@ exports.updateTaskValidator = Joi.object({
   endDate: Joi.date().messages({
     "date.base": "Ngày hết hạn không hợp lệ",
   }),
-  type: Joi.string().valid('new_request', 'bug', 'task', 'feature').optional(),
 });

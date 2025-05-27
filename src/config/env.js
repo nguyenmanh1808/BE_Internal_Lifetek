@@ -1,34 +1,34 @@
 const dotenv = require("dotenv").config();
 
 module.exports = {
-    APP_NAME: process.env.APP_NAME,
-    BASE_URL: process.env.BASE_URL,
-    CLIENT_URL: process.env.CLIENT_URL,
-    PORT: process.env.PORT,
-    DOMAIN_SWAGGER: process.env.DOMAIN_SWAGGER, //Swagger
-    URI_DB: process.env.URI_DB, 
-    MONGO_HOST: process.env.MONGO_HOST, 
-    MONGO_USERNAME: process.env.MONGO_USERNAME,
-    MONGO_PASSWORD: process.env.MONGO_PASSWORD,
-    REPLICA_SET: process.env.REPLICA_SET,
-    NODE_ENV: process.env.NODE_ENV || "development",
+  APP_NAME: process.env.APP_NAME,
+  BASE_URL: process.env.BASE_URL,
+  CLIENT_URL: process.env.CLIENT_URL,
+  PORT: process.env.PORT,
+  DOMAIN_SWAGGER: process.env.DOMAIN_SWAGGER, //Swagger
+  URI_DB: process.env.URI_DB,
+  MONGO_HOST: process.env.MONGO_HOST,
+  MONGO_USERNAME: process.env.MONGO_USERNAME,
+  MONGO_PASSWORD: process.env.MONGO_PASSWORD,
+  REPLICA_SET: process.env.REPLICA_SET,
+  NODE_ENV: process.env.NODE_ENV || "development1",
 
-    //JWT
-    JWT_SECRET: process.env.JWT_SECRET,
-    JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,
-    JWT_ACCESS_EXPIRY: process.env.JWT_ACCESS_EXPIRY,
-    JWT_REFRESH_EXPIRY: process.env.JWT_REFRESH_EXPIRY,
+  //JWT
+  JWT_SECRET: process.env.JWT_SECRET,
+  JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,
+  JWT_ACCESS_EXPIRY: process.env.JWT_ACCESS_EXPIRY,
+  JWT_REFRESH_EXPIRY: process.env.JWT_REFRESH_EXPIRY,
 
-    //CLOUDINARY
-    CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME,
-    CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
-    CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
+  //CLOUDINARY
+  CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME,
+  CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
+  CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
 
-    //EMAIL
-    EMAIL_USER: process.env.EMAIL_USER,
-    EMAIL_PASS: process.env.EMAIL_PASS,
-    
-    //REDIS
-    REDIS_HOST: process.env.REDIS_HOST,
-    REDIS_PORT: process.env.REDIS_PORT,
-}
+  //EMAIL
+  EMAIL_USER: process.env.EMAIL_USER,
+  EMAIL_PASS: process.env.EMAIL_PASS,
+
+  //REDIS
+  REDIS_HOST: process.env.REDIS_HOST,
+  REDIS_PORT: process.env.REDIS_PORT,
+};

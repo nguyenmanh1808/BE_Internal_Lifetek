@@ -31,6 +31,7 @@ routerTask.route("/:taskId")
     taskController.deleteTask
   );
 
+
 routerTask.put("/:taskId/status", taskController.updateTaskStatus);
 routerTask.get("/project/:projectId", taskController.getAllTaskByProject);
 routerTask.post("/:taskId/add-user", taskController.addUserToTaskController);
