@@ -48,7 +48,8 @@ exports.createWorkFlowStep = async (data) => {
     nameStep: data.nameStep,
     stepOrder: data.stepOrder,
     requiredRole: data.requiredRole,
-    isFinal: data.isFinal
+    isFinal: data.isFinal,
+    color: data.color || '#cccccc' 
   }
   const workFlowStep = await WorkflowStep.create(dataStep);
 
