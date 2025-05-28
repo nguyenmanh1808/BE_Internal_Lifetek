@@ -1,6 +1,7 @@
 const workFlow = require("./workflow.model.js");
 const WorkflowStep = require("./workflowStep.model.js");
 const WorkflowTransition = require("./workflowTransition.js");
+const ProjectRole = require("../projectRole/projectRole.model.js")
 exports.getDetailWorkFlowService = async (projectId) => {
   const workFlowData = await workFlow.findOne({ projectId });
   const Id = workFlowData._id;
@@ -131,3 +132,74 @@ exports.canUserTransitionStep = async (
   console.log("transition", transition);
   return !!transition; // true nếu tồn tại transition hợp lệ
 };
+
+
+exports.getAllTransition = async ()=>{
+   const workFlowTransitionData = await WorkflowTransition.find()
+    .populate({
+      path: "fromStep",
+      select: "nameStep stepOrder",
+    })
+   .populate({
+      path: "toStep",
+      select: "nameStep stepOrder",
+    })
+    .populate({
+      path: "allowedRoles",
+      select: "roleName permissions description",
+    })
+  if (!workFlowTransitionData) throw new Error("Không tìm thấy workflow");
+  return workFlowTransitionData;
+}
+
+exports.addTransition = async(data)=>{
+  const dataFromStep = {
+      workflowId: data.workflowId,
+      nameStep: data.fromStep.nameStep,
+      stepOrder: data.fromStep.stepOrder
+  }
+  const dataToStep = {
+      workflowId: data.workflowId,
+      nameStep: data.toStep.nameStep,
+      stepOrder: data.toStep.stepOrder
+  }
+  const fromStep = await WorkflowStep.create(dataFromStep);
+  const toStep = await WorkflowStep.create(dataToStep);
+
+/// project role
+     const dataProjectRoles =   await Promise.all(data.allowedRoles.map(async (item,index)=>{
+            let dataProjectRole = {
+                projectId: data.projectId,
+                roleName: item.roleName,
+                description: item.description,
+                permissions: item.permissions,
+                userIds : []
+           }
+         
+
+         return  await ProjectRole.create(dataProjectRole);
+
+        }))
+          
+  const roles = dataProjectRoles.map((item,index)=>{
+      return item._id
+  })
+  console.log(roles)
+/////trasition
+  let transiton = {
+          workflowId: data.workflowId,
+          fromStep: fromStep._id,
+          toStep:toStep._id,
+          allowedRoles:roles
+        }
+  await WorkflowTransition.create(transiton);
+  
+      
+  return {
+    toStep,
+    fromStep,
+    transiton,
+    dataProjectRoles
+  }
+        
+}

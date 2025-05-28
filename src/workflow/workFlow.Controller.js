@@ -141,3 +141,23 @@ exports.deleteAllWorkflowTransition = async (req, res) => {
     res.status(404).json({ message: err.message });
   }
 };
+
+exports.getAllTransition = async(req,res)=>{
+  try{
+    const dataWorkFlowTransiton = await workFlowService.getAllTransition();
+    if (!dataWorkFlowTransiton) {
+      return next(new Error("Quy trình làm việc không tồn tại"));
+    }
+    return new SuccessResponse(dataWorkFlowTransiton).send(res);
+  }catch(err){
+    res.status(404).json({ message: err.message });
+  }
+}
+exports.addTransition = async(req,res)=>{
+  try {
+    const workflow = await workFlowService.addTransition(req.body);
+    res.status(201).json(workflow);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+}

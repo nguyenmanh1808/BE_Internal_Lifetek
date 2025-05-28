@@ -2,7 +2,6 @@ const express = require("express");
 const workFlowController = require("./workFlow.Controller.js");
 const routeWorkflow = express.Router();
 
-routeWorkflow.get("/:projectId", workFlowController.getDetailWorkFlow);
 routeWorkflow.post("/", workFlowController.createWorkflow);
 
 // workflow step
@@ -24,6 +23,7 @@ routeWorkflow.delete(
   workFlowController.deleteAllWorkflowStep
 );
 // work flow transition
+
 routeWorkflow.get(
   "/workflow-transition/:workflowId",
   workFlowController.getAllWorkflowTransiton
@@ -42,7 +42,10 @@ routeWorkflow.delete(
 );
 routeWorkflow.delete(
   "/delete-all/workflow-transition/:WorkflowId",
-  workFlowController.deleteAllWorkflowTransition
+workFlowController.deleteAllWorkflowTransition
 );
-
+/////////
+routeWorkflow.get( "/workflow-transition",workFlowController.getAllTransition)// lâys tất cả cá luồng
+routeWorkflow.post( "/workflow-transition/add",workFlowController.addTransition)
+routeWorkflow.get("/:projectId", workFlowController.getDetailWorkFlow);
 module.exports = routeWorkflow;
