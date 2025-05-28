@@ -3,7 +3,7 @@ const Joi = require("joi");
 
 const { STATUS } = require("../constants/statusConstants.js");
 const { PRIORITY } = require("../constants/index.js");
-
+const {TYPETASK} = require("../constants/index.js")
 Joi.objectId = joiObjectId(Joi);
 
 exports.createTaskValidator = Joi.object({
@@ -94,7 +94,12 @@ exports.updateTaskValidator = Joi.object({
   image: Joi.string().optional().allow(null, "").messages({
     "string.base": "Hình ảnh không hợp lệ",
   }),
-
+  type: Joi.string()
+    .valid(...Object.values(TYPETASK))
+    .messages({
+      "string.empty": "Mức độ ưu tiên không được để trống",
+      "any.only": "Mức độ ưu tiên không hợp lệ",
+    }),
   link: Joi.string().optional().allow(null, "").messages({
     "string.base": "Link không hợp lệ",
   }),

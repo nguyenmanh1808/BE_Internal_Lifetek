@@ -23,7 +23,6 @@ routerTask.route("/:taskId")
   .get(taskController.getTaskById)
   .put(
     upload.single("image"),
-    checkPermissions(['Edit']),
     taskController.updateTask
   )
   .delete(
