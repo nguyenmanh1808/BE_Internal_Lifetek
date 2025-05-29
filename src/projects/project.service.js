@@ -131,7 +131,8 @@ exports.getAllProjects = async (userId, skip, limit) => {
       startDate: 1,
       endDate: 1,
       priority:1,
-      bugCount: 1
+      bugCount: 1,
+      category:1
     }
   }
 ])
