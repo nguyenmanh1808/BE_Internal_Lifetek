@@ -45,6 +45,7 @@ exports.createProject = async (data) => {
     startDate: data.startDate,
     endDate: data.endDate,
     priority: data.priority,
+    category: data.category 
   });
 };
 

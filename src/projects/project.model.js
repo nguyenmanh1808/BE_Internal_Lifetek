@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { PRIORITY, STATUS_PROJECT } = require("../constants/index.js");
+const { PRIORITY, STATUS_PROJECT,TYPEPROJECT } = require("../constants/index.js");
 const removeAccents = require("remove-accents");
 
 const ProjectSchema = new mongoose.Schema(
@@ -23,6 +23,11 @@ const ProjectSchema = new mongoose.Schema(
       type: Number,
       enum: Object.values(PRIORITY),
       default: PRIORITY.LOW,
+    },
+    category :{
+      type: String,
+      enum: Object.values(TYPEPROJECT), 
+      default: TYPEPROJECT.QLDA,
     },
     startDate: { type: Date, default: Date.now },
     endDate: { type: Date, default: Date.now  }, // deadline

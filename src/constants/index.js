@@ -44,6 +44,11 @@ const TYPETASK = {
   bug: "bug",
   new_request: "new_request",
 };
+const TYPEPROJECT ={
+  QLDA:"Quản lý dự án",
+  QLNV:"Quản lý nhân viên",
+  QLHD:"Quản lý hợp đồng"
+}
 const STATUS_CODE = {
   OK: 200,
   CREATED: 201,
@@ -93,4 +98,5 @@ module.exports = {
   STATUS_CODE,
   PERMISSIONS,
   TYPETASK,
+  TYPEPROJECT
 };
