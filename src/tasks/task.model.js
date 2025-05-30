@@ -52,6 +52,11 @@ const TaskSchema = new mongoose.Schema(
       required: true
     },
     endDate: { type: Date }, // deadline
+     dynamicFields: {
+        type: Map,
+        of: Schema.Types.Mixed,
+        default: {}
+      }
   },
   { timestamps: true, strict: false }
 );

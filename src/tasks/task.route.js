@@ -13,7 +13,7 @@ routerTask.route("/")
   .get(taskController.getAllTasks)
   .post(
     upload.single("image"),
-  
+    checkPermissions(['Add']),
     taskController.addTask
   )
   .delete(taskController.deleteManyTask);

@@ -10,6 +10,10 @@ const projectService = require("../projects/project.service.js");
 const projectRoleService = require("../projectRole/projectRole.service.js")
 const workFlowService = require("../workflow/workFlow.service.js")
 const { ObjectId } = require('mongodb');
+
+function getKeyByValue(obj, value) {
+  return Object.keys(obj).find((key) => obj[key] === value);
+}
 /// thay đổi trạng thái
 exports.updateTaskStatus = async (req, res, next) => {
   try {
@@ -301,10 +305,13 @@ if (
       }
     }
     //check type
-    const project = await projectService.getProjectById(dataBody.projectId);
+     const project = await projectService.findById(dataBody.projectId);
        if (!project) return res.status(404).json({ message: "Project không tồn tại" });
 
-    const allowedTypes = PROJECT_TYPE_TASKS[project.category] || [];
+    const projectCategoryKey = getKeyByValue(TYPEPROJECT, project.category);
+
+    const allowedTypes = PROJECT_TYPE_TASKS[projectCategoryKey] || [];
+    
     if (!allowedTypes.includes(dataBody.type)) {
       return res.status(400).json({
         message: `Loại task '${dataBody.type}' không hợp lệ với loại project '${project.category}'`
@@ -337,6 +344,7 @@ exports.getAllTasks = async (req, res, next) => {
 };
 
 // lấy task bằng id
+
 exports.getTaskById = async (req, res, next) => {
   try {
     const taskId = req.task._id;
@@ -409,10 +417,14 @@ exports.updateTask = async (req, res, next) => {
       dataBody.image = imageUrl.secure_url;
     }
      //check type
+     
     const project = await projectService.findById(dataBody.projectId);
        if (!project) return res.status(404).json({ message: "Project không tồn tại" });
 
-    const allowedTypes = PROJECT_TYPE_TASKS[project.category] || [];
+    const projectCategoryKey = getKeyByValue(TYPEPROJECT, project.category);
+
+    const allowedTypes = PROJECT_TYPE_TASKS[projectCategoryKey] || [];
+
     if (!allowedTypes.includes(dataBody.type)) {
       return res.status(400).json({
         message: `Loại task '${dataBody.type}' không hợp lệ với loại project '${project.category}'`
