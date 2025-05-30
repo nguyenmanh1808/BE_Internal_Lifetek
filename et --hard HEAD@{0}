@@ -1,0 +1,30 @@
+[33m19d9db1[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mtts_lifetex_manh[m[33m)[m HEAD@{0}: commit: add type task
+[33m705d59b[m[33m ([m[1;31morigin/tts_lifetex_manh[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{1}: commit: add work flow
+[33m7733669[m HEAD@{2}: commit: add work flow
+[33m65313ed[m HEAD@{3}: commit: add work flow
+[33mff40e0b[m HEAD@{4}: commit: add work flow
+[33m125238a[m HEAD@{5}: commit: add work flow
+[33m993f167[m HEAD@{6}: commit: add work flow
+[33m00309f0[m HEAD@{7}: commit (merge): update code
+[33maebfa64[m HEAD@{8}: commit: update code
+[33m0fde865[m HEAD@{9}: commit (merge): Merge branch 'tts_lifetex_manh' of https://github.com/nguyenmanh1808/BE_Internal_Lifetek into tts_lifetex_manh
+[33maba3c41[m HEAD@{10}: commit: fix lại
+[33m9d5ef24[m HEAD@{11}: commit (merge): Merge branch 'tts_lifetex_manh' of https://github.com/nguyenmanh1808/BE_Internal_Lifetek into tts_lifetex_manh
+[33mf1119dd[m HEAD@{12}: commit: lại
+[33medf259b[m HEAD@{13}: commit (merge): Merge branch 'tts_lifetex_manh' of https://github.com/nguyenmanh1808/BE_Internal_Lifetek into tts_lifetex_manh
+[33me48d3ed[m HEAD@{14}: commit (merge): lỗi
+[33mfebf8bc[m HEAD@{15}: commit (merge): Merge branch 'tts_lifetex_manh' of https://github.com/nguyenmanh1808/BE_Internal_Lifetek into tts_lifetex_manh
+[33m457a563[m HEAD@{16}: commit: bla
+[33m1db4139[m HEAD@{17}: commit (merge): Merge branch 'tts_lifetex_manh' of https://github.com/nguyenmanh1808/BE_Internal_Lifetek into tts_lifetex_manh
+[33m74d8391[m HEAD@{18}: commit: lại lại
+[33m48bd736[m HEAD@{19}: commit (merge): Merge branch 'tts_lifetex_manh' of https://github.com/nguyenmanh1808/BE_Internal_Lifetek into tts_lifetex_manh
+[33m8473cc7[m HEAD@{20}: commit (merge): Merge branch 'tts_lifetex_manh' of https://github.com/nguyenmanh1808/BE_Internal_Lifetek into tts_lifetex_manh
+[33mfdf1265[m HEAD@{21}: commit (merge): workflows
+[33mc220e1b[m HEAD@{22}: commit (merge): toan sai
+[33m6407a3d[m[33m ([m[1;33mtag: [m[1;33m2.0.0[m[33m)[m HEAD@{23}: checkout: moving from tts_lifetex_dong2 to tts_lifetex_manh
+[33mea1e0ba[m[33m ([m[1;32mtts_lifetex_dong2[m[33m)[m HEAD@{24}: commit: dong
+[33m808875b[m HEAD@{25}: checkout: moving from tts_lifetex_manh to tts_lifetex_dong2
+[33m6407a3d[m[33m ([m[1;33mtag: [m[1;33m2.0.0[m[33m)[m HEAD@{26}: commit (merge): Merge branch 'tts_lifetex_manh' of https://github.com/nguyenmanh1808/BE_Internal_Lifetek into tts_lifetex_manh
+[33m6aec643[m HEAD@{27}: commit: chốt phiên bản hiện tại
+[33m61eec37[m HEAD@{28}: pull: Fast-forward
+[33macaf5e1[m HEAD@{29}: clone: from https://github.com/nguyenmanh1808/BE_Internal_Lifetek.git

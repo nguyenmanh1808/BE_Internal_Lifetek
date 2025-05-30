@@ -28,6 +28,7 @@ exports.createWorkflow = async (data) => {
   return workflow;
 };
 
+
 exports.deleteAllWorkflowTransition = async (workflowId) => {
   await WorkflowTransition.deleteMany({ workflowId });
   return { message: "Đã xoá workflow và dữ liệu liên quan" };
@@ -43,6 +44,7 @@ exports.getAllWorkFlowStep = async (workflowId) => {
 };
 exports.createWorkFlowStep = async (data) => {
   console.log("createWorkFlowStep nhận data:", data);
+  console.log("createWorkFlowStep nhận data:", data);
   const dataStep = {
     workflowId: data.workflowId,
     nameStep: data.nameStep,
@@ -51,6 +53,7 @@ exports.createWorkFlowStep = async (data) => {
     isFinal: data.isFinal,
     color: data.color || '#cccccc' 
   }
+
   const workFlowStep = await WorkflowStep.create(dataStep);
 
   return workFlowStep;
@@ -73,7 +76,7 @@ exports.deleteAllWorkflowStep = async (workflowId) => {
   return { message: "Đã xoá workflow và dữ liệu liên quan" };
 };
 
-//workflow contrans
+// Workflow Transition
 exports.getAllWorkFlowTransition = async (workflowId) => {
   const workFlowTransitionData = await WorkflowTransition.find({
     workflowId: workflowId,
@@ -83,7 +86,7 @@ exports.getAllWorkFlowTransition = async (workflowId) => {
 };
 exports.createWorkFlowTransition = async (data) => {
   const dataTransition = {
-    workflowId: data.workflowId,
+    workflowId: new mongoose.Types.ObjectId(data.workflowId),
     fromStep: data.fromStep,
     toStep: data.toStep,
     allowedRoles: data.allowedRoles,
@@ -94,7 +97,7 @@ exports.createWorkFlowTransition = async (data) => {
     throw new Error(" Luồng  đã tồn tại");
   }
   const workFlowContransiton = await WorkflowTransition.create(dataTransition);
-  return workFlowContransiton
+  return workFlowContransiton;
 }
 
 exports.updateWorkflowTransition = async (id,data) => {
@@ -125,9 +128,10 @@ exports.canUserTransitionStep = async (
   toStep
 ) => {
   const transition = await WorkflowTransition.findOne({
-    workflowId,
+    workflowId: new mongoose.Types.ObjectId(workflowId),
     fromStep,
     toStep,
+    allowedRoles: userRole,
     allowedRoles: userRole,
   });
   console.log("transition", transition);

@@ -1,10 +1,9 @@
 const express = require("express");
+const taskController = require("./task.controller.js");
+const upload = require("../config/multer.js");
+const authMiddleware = require("../middlewares/auth.middleware.js");
+const checkPermissions = require("../middlewares/checkProjectRole.middleware.js");
 const routerTask = express.Router();
-
-const taskController = require("./task.controller");
-const upload = require("../config/multer");
-const authMiddleware = require("../middlewares/auth.middleware");
-const checkPermissions = require("../middlewares/checkProjectRole.middleware");
 
 routerTask.use(authMiddleware);
 
@@ -14,7 +13,7 @@ routerTask.route("/")
   .get(taskController.getAllTasks)
   .post(
     upload.single("image"),
-    checkPermissions(['Add']),
+  
     taskController.addTask
   )
   .delete(taskController.deleteManyTask);

@@ -237,14 +237,10 @@ exports.searchTaskByTitle = async (req, res, next) => {
 
 exports.addTask = async (req, res, next) => {
   try {
-    // const userRole = req?.user?.role;
-    // const hasPermission = PERMISSIONS.CREATE_TASK.includes(userRole);
-
-    // if (!hasPermission) {
-    //   return next(new Error("Bạn không có quyền thêm task"));
-    // }
+ 
 
     const dataBody = req.body;
+    console.log(dataBody)
 
     // Chuyển assigneeId thành mảng nếu là string
     if (typeof dataBody.assigneeId === "string") {
@@ -305,13 +301,13 @@ if (
       }
     }
     //check type
-    const project = await projectService.findById(dataBody.projectId);
+    const project = await projectService.getProjectById(dataBody.projectId);
        if (!project) return res.status(404).json({ message: "Project không tồn tại" });
 
-    const allowedTypes = PROJECT_TYPE_TASKS[project.type] || [];
+    const allowedTypes = PROJECT_TYPE_TASKS[project.category] || [];
     if (!allowedTypes.includes(dataBody.type)) {
       return res.status(400).json({
-        message: `Loại task '${dataBody.type}' không hợp lệ với loại project '${project.type}'`
+        message: `Loại task '${dataBody.type}' không hợp lệ với loại project '${project.category}'`
       });
     }
     // Thêm task
@@ -416,10 +412,10 @@ exports.updateTask = async (req, res, next) => {
     const project = await projectService.findById(dataBody.projectId);
        if (!project) return res.status(404).json({ message: "Project không tồn tại" });
 
-    const allowedTypes = PROJECT_TYPE_TASKS[project.type] || [];
+    const allowedTypes = PROJECT_TYPE_TASKS[project.category] || [];
     if (!allowedTypes.includes(dataBody.type)) {
       return res.status(400).json({
-        message: `Loại task '${dataBody.type}' không hợp lệ với loại project '${project.type}'`
+        message: `Loại task '${dataBody.type}' không hợp lệ với loại project '${project.category}'`
       });
     }
     const task = await taskService.editTask(id, dataBody);

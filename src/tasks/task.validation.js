@@ -1,7 +1,6 @@
 const joiObjectId = require("joi-objectid");
 const Joi = require("joi");
 
-const { STATUS } = require("../constants/statusConstants.js");
 const { PRIORITY } = require("../constants/index.js");
 const {TYPETASK} = require("../constants/index.js")
 Joi.objectId = joiObjectId(Joi);
@@ -62,7 +61,9 @@ exports.createTaskValidator = Joi.object({
   }),
   endDate: Joi.date().messages({
     "date.base": "Ngày hết hạn không hợp lệ",
+    
   }),
+    dynamicFields: Joi.object().pattern(Joi.string(), Joi.any())
 });
 
 exports.updateTaskValidator = Joi.object({
@@ -101,6 +102,7 @@ exports.updateTaskValidator = Joi.object({
   link: Joi.string().optional().allow(null, "").messages({
     "string.base": "Link không hợp lệ",
   }),
+    dynamicFields: Joi.object().pattern(Joi.string(), Joi.any()),
   // images: Joi.string().uri().optional().messages({
   //   "string.empty": "Hình ảnh không được để trống",
   //   "string.uri": "Hình ảnh không hợp lệ",
