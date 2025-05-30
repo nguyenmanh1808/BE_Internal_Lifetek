@@ -317,6 +317,9 @@ if (
         message: `Loại task '${dataBody.type}' không hợp lệ với loại project '${project.category}'`
       });
     }
+    if (dataBody.dynamicFields && typeof dataBody.dynamicFields === 'string') {
+      dataBody.dynamicFields = JSON.parse(dataBody.dynamicFields);
+    }
     // Thêm task
     const task = await taskService.addTask(dataBody);
     return new SuccessResponse(task).send(res);
