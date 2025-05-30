@@ -8,6 +8,8 @@ const emailQueue = require("../queues/index.js");
 const SuccessResponse = require("../utils/SuccessResponse.js");
 const crypto = require("crypto");
 const { sendMail } = require("../config/nodeMailer.js");
+const axios = require("axios"); // Thêm axios để gọi API của SSO provider
+const { ROLES } = require("../constants/index.js"); // Import ROLES
 
 //đăng ký
 exports.register = async (req, res, next) => {
@@ -131,14 +133,30 @@ exports.login = async (req, res, next) => {
 exports.getNewAccessToken = async (req, res, next) => {
   const refreshToken = req.cookies.refreshToken;
 
-  if (!refreshToken) return next(new Error("Token không hợp lệ"));
+  if (!refreshToken) {
+    return next(new Error("Refresh token không được cung cấp")); // Nên sử dụng AppError với status code 401
+  }
 
   try {
-    const decode = jwt.verify(refreshToken, env.JWT_REFRESH_SECRET);
+    const decoded = jwt.verify(refreshToken, env.JWT_REFRESH_SECRET);
 
-    if (!decode) return next(new Error("Token không hợp lệ"));
+    const user = await User.findById(decoded.id);
+    if (!user) {
+      return next(new Error("Người dùng không tồn tại")); // Nên sử dụng AppError với status code 401
+    }
+
+    // Kiểm tra xem người dùng có bị vô hiệu hóa hay không (nếu có logic đó)
+
+    const accessToken = tokenUtils.generateAccessToken(user);
+
+    return new SuccessResponse({
+      accessToken: accessToken,
+      tokenExpiry: env.JWT_ACCESS_EXPIRY,
+    }).send(res);
   } catch (error) {
-    return next(error);
+    // Xử lý các lỗi JWT cụ thể (ví dụ: hết hạn, không hợp lệ)
+    // Ví dụ: if (error.name === "TokenExpiredError") return next(new AppError("Refresh token đã hết hạn", 401));
+    return next(new Error("Refresh token không hợp lệ hoặc đã hết hạn")); // Nên sử dụng AppError với status code 401
   }
 };
 //đăng xuất
@@ -201,22 +219,19 @@ exports.resetPassword = async (req, res, next) => {
       .update(token)
       .digest("hex");
 
-    // const user = await User.findOne({
-    //   resetPasswordToken,
-    //   resetPasswordExpire: { $gt: Date.now() },
-    // });
-    // console.log("Tìm theo resetPasswordToken:", resetPasswordToken);
-    // const user = await User.findOne({ resetPasswordToken }); 
+    const user = await User.findOne({
+      resetPasswordToken,
+      resetPasswordExpire: { $gt: Date.now() },
+    });
 
     if (!user) {
       console.log("Không tìm thấy user với token đã hash.");
+      return next(new Error("Token không hợp lệ hoặc đã hết hạn"));
     } else {
       console.log("User tìm được:", user.email);
       console.log("resetPasswordExpire:", user.resetPasswordExpire);
       console.log("Hiện tại:", new Date());
     }
-
-    if (!user) return next(new Error("Token không hợp lệ"));
 
     if (password !== confirmPassword)
       return next(new Error("Mật khẩu không trùng khớp"));
@@ -230,6 +245,115 @@ exports.resetPassword = async (req, res, next) => {
     return new SuccessResponse("Đặt lại mật khẩu thành công").send(res);
   } catch (error) {
     return next(error);
+  }
+};
+
+exports.ssoCallback = async (req, res, next) => {
+  try {
+    const { provider } = req.params;
+    const { code, state, error: ssoError, error_description } = req.query;
+    if (ssoError) {
+      console.error(`Lỗi từ SSO Provider ${provider}: ${ssoError} - ${error_description}`);
+      return res.redirect(`${env.CLIENT_URL}/login?error=${encodeURIComponent(error_description || ssoError)}`);
+    }
+
+    if (!code) {
+      return next(new Error("Không nhận được mã ủy quyền (authorization code) từ SSO provider."));
+    }
+    const providerKey = provider.toUpperCase();
+    const tokenExchangeUrl = env[`SSO_${providerKey}_TOKEN_URL`];
+    const clientId = env[`SSO_${providerKey}_CLIENT_ID`];
+    const clientSecret = env[`SSO_${providerKey}_CLIENT_SECRET`];
+    const redirectUri = `${env.BASE_URL}/api/v1/auth/sso/${provider.toLowerCase()}/callback`; 
+    if (!tokenExchangeUrl || !clientId || !clientSecret) {
+        return next(new Error(`Cấu hình trao đổi token cho nhà cung cấp SSO '${provider}' chưa đầy đủ.`));
+    }
+    let tokenResponse;
+    try {
+      tokenResponse = await axios.post(tokenExchangeUrl, new URLSearchParams({
+        grant_type: "authorization_code",
+        code: code,
+        redirect_uri: redirectUri,
+        client_id: clientId,
+        client_secret: clientSecret,
+      }), {
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      });
+    } catch (err) {
+      console.error("Lỗi khi trao đổi code lấy token từ SSO:", err.response?.data || err.message);
+      return next(new Error("Không thể trao đổi mã ủy quyền để lấy token từ nhà cung cấp SSO."));
+    }
+
+    const { access_token: ssoAccessToken, id_token: ssoIdToken } = tokenResponse.data;
+    const userInfoUrl = env[`SSO_${providerKey}_USERINFO_URL`];
+    if (!userInfoUrl) {
+        return next(new Error(`Cấu hình URL thông tin người dùng cho '${provider}' bị thiếu.`));
+    }
+    let ssoUserInfo;
+    try {
+        const userInfoResponse = await axios.get(userInfoUrl, {
+            headers: { "Authorization": `Bearer ${ssoAccessToken}` },
+        });
+        ssoUserInfo = userInfoResponse.data; // Định dạng phụ thuộc vào nhà cung cấp SSO
+    } catch (err) {
+        console.error("Lỗi khi lấy thông tin người dùng từ SSO:", err.response?.data || err.message);
+        return next(new Error("Không thể lấy thông tin người dùng từ nhà cung cấp SSO."));
+    }
+    const ssoUserId = ssoUserInfo.id || ssoUserInfo.sub; // 'sub' thường là subject identifier trong OpenID Connect
+    const ssoUserEmail = ssoUserInfo.email;
+    const ssoUserName = ssoUserInfo.name || ssoUserInfo.preferred_username || ssoUserEmail.split("@")[0];
+    const ssoEmailVerified = ssoUserInfo.email_verified || true; // Mặc định là true nếu SSO không cung cấp
+
+    if (!ssoUserEmail || !ssoUserId) {
+        return next(new Error("Thông tin người dùng từ SSO không đầy đủ (thiếu email hoặc ID)."));
+    }
+
+    let user = await User.findOne({ ssoProvider: provider.toLowerCase(), ssoProviderId: ssoUserId });
+
+    if (!user) {
+      user = await User.findOne({ email: ssoUserEmail });
+      if (user) { // Người dùng đã tồn tại với email này, liên kết tài khoản SSO
+        user.ssoProvider = provider.toLowerCase();
+        user.ssoProviderId = ssoUserId;
+        user.verified = user.verified || ssoEmailVerified;
+      } else { // Tạo người dùng mới
+        user = await User.create({
+          email: ssoUserEmail,
+          userName: ssoUserName,
+          ssoProvider: provider.toLowerCase(),
+          ssoProviderId: ssoUserId,
+          verified: ssoEmailVerified,
+          role: ROLES.USER, // Vai trò mặc định
+          // Mật khẩu không cần thiết vì đăng nhập qua SSO
+        });
+      }
+      await user.save();
+    } else if (!user.verified && ssoEmailVerified) {
+        // Nếu user đã tồn tại qua SSO nhưng chưa verified, và SSO trả về email đã verified
+        user.verified = true;
+        await user.save();
+    }
+
+    // Bước 4: Tạo token (Access Token, Refresh Token) cho người dùng trong hệ thống của bạn
+    const accessToken = tokenUtils.generateAccessToken(user);
+    const refreshToken = tokenUtils.generateRefreshToken(user);
+
+    res.cookie("refreshToken", refreshToken, { 
+        httpOnly: true, 
+        secure: env.NODE_ENV === "production", // true ở production
+        sameSite: "strict" 
+    });
+  
+    user.password = undefined; // Không trả về mật khẩu
+    return new SuccessResponse({ 
+        accessToken, 
+        tokenExpiry: env.JWT_ACCESS_EXPIRY, 
+        user 
+    }).send(res);
+
+  } catch (error) {
+    console.error("Lỗi nghiêm trọng trong ssoCallback:", error);
+    return res.redirect(`${env.CLIENT_URL}/login?error=sso_failed`);
   }
 };
 exports.changePassword = async (req, res, next) => {
@@ -259,4 +383,3 @@ exports.changePassword = async (req, res, next) => {
     return next(error);
   }
 };
-

@@ -27,7 +27,9 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: true,
+      required: function () {
+        return !this.ssoProviderId;
+      },
     },
     verified: {
       type: Boolean,
@@ -38,8 +40,18 @@ const userSchema = new mongoose.Schema(
       enum: Object.values(ROLES),
       default: ROLES.USER,
     },
-    resetPasswordToken: String, 
+    resetPasswordToken: String,
     resetPasswordExpire: Date,
+    ssoProvider: { 
+      type: String,
+      trim: true,
+      index: true,
+    },
+    ssoProviderId: { 
+      type: String,
+      trim: true,
+      index: true, 
+    },
   },
   { timestamps: true }
 );
@@ -78,5 +90,8 @@ userSchema.statics.findByEmailOrPhone = async function (identifier) {
     $or: [{ email: identifier }, { phone: identifier }],
   });
 }
+
+// Đảm bảo tính duy nhất cho cặp ssoProvider và ssoProviderId nếu chúng tồn tại
+userSchema.index({ ssoProvider: 1, ssoProviderId: 1 }, { unique: true, sparse: true });
 
 module.exports = mongoose.model("User", userSchema);

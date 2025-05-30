@@ -12,5 +12,6 @@ routerAuth.post("/refresh-token", authMiddleware, authController.getNewAccessTok
 routerAuth.post("/forgot-password", authController.forgotPassword);
 routerAuth.post("/reset-password", authController.resetPassword);
 routerAuth.post("/change-password", authMiddleware, authController.changePassword);
+routerAuth.get("/sso/:provider/callback", authController.ssoCallback);
 
 module.exports = routerAuth;
