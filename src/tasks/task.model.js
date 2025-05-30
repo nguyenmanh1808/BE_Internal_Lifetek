@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
-const { STATUS } = require("../constants/statusConstants.js");
-const { PRIORITY, STATUS_TASK, TYPETASK } = require("../constants/index.js");
+const { PRIORITY } = require("../constants/index.js");
 const removeAccents = require("remove-accents");
 const getNextTaskCode = require("../utils/generateTaskCode.js");
 
@@ -50,12 +49,11 @@ const TaskSchema = new mongoose.Schema(
     },
     type: {
       type: String,
-      enum: Object.values(TYPETASK),
-      default: TYPETASK.new_request,
+      required: true
     },
     endDate: { type: Date }, // deadline
   },
-  { timestamps: true }
+  { timestamps: true, strict: false }
 );
 TaskSchema.pre("save",async function (next) {
   

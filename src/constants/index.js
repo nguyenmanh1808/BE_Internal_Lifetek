@@ -40,15 +40,17 @@ const COMMENT = {
   BUG: "BUG",
   STORY: "STORY",
 };
-const TYPETASK = {
-  bug: "bug",
-  new_request: "new_request",
+const TYPEPROJECT = {
+  QLDA: "Quản lý dự án",
+  QLNV: "Quản lý nhân viên",
+  QLHD: "Quản lý hợp đồng"
 };
-const TYPEPROJECT ={
-  QLDA:"Quản lý dự án",
-  QLNV:"Quản lý nhân viên",
-  QLHD:"Quản lý hợp đồng"
-}
+
+const PROJECT_TYPE_TASKS = {
+  QLDA: ['bug', 'new_request'],
+  QLNV: ['onboarding', 'update_info', 'terminate'],
+  QLHD: ['create_contract', 'renew_contract', 'terminate_contract']
+};
 const STATUS_CODE = {
   OK: 200,
   CREATED: 201,
@@ -96,7 +98,7 @@ module.exports = {
   CHANGE_SOURCE,
   COMMENT,
   STATUS_CODE,
-  PERMISSIONS,
-  TYPETASK,
-  TYPEPROJECT
+  PERMISSIONS, 
+  TYPEPROJECT,
+  PROJECT_TYPE_TASKS
 };

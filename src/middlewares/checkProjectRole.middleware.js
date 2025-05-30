@@ -15,6 +15,7 @@ const checkProjectPermissions = (requiredPermissions = []) => {
             // Lấy projectId từ params hoặc body. Điều chỉnh nếu cần.
             // Hoặc từ req.task.projectId nếu một middleware trước đó (như task.controller.load) đã fetch task.
             let projectId = req.params.projectId || req.body.projectId;
+            console.log(req.body)
             if (!projectId && req.task && req.task.projectId) {
                 projectId = req.task.projectId.toString();
             }

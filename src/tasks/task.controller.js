@@ -5,7 +5,7 @@ const taskStatusChangeService = require("./statusChange.service.js");
 const taskValidator = require("./task.validation.js");
 const SuccessResponse = require("../utils/SuccessResponse.js");
 const PAGINATE = require("../constants/paginate.js");
-const { CHANGE_SOURCE, PERMISSIONS, TYPETASK } = require("../constants/index.js");
+const { CHANGE_SOURCE, PERMISSIONS, PROJECT_TYPE_TASKS } = require("../constants/index.js");
 const projectService = require("../projects/project.service.js");
 const projectRoleService = require("../projectRole/projectRole.service.js")
 const workFlowService = require("../workflow/workFlow.service.js")
@@ -304,7 +304,16 @@ if (
         return next(new Error("Lỗi khi upload ảnh: " + uploadErr.message));
       }
     }
+    //check type
+    const project = await projectService.findById(dataBody.projectId);
+       if (!project) return res.status(404).json({ message: "Project không tồn tại" });
 
+    const allowedTypes = PROJECT_TYPE_TASKS[project.type] || [];
+    if (!allowedTypes.includes(dataBody.type)) {
+      return res.status(400).json({
+        message: `Loại task '${dataBody.type}' không hợp lệ với loại project '${project.type}'`
+      });
+    }
     // Thêm task
     const task = await taskService.addTask(dataBody);
     return new SuccessResponse(task).send(res);
@@ -403,7 +412,16 @@ exports.updateTask = async (req, res, next) => {
       const imageUrl = await uploadSingleFile(filePath);
       dataBody.image = imageUrl.secure_url;
     }
+     //check type
+    const project = await projectService.findById(dataBody.projectId);
+       if (!project) return res.status(404).json({ message: "Project không tồn tại" });
 
+    const allowedTypes = PROJECT_TYPE_TASKS[project.type] || [];
+    if (!allowedTypes.includes(dataBody.type)) {
+      return res.status(400).json({
+        message: `Loại task '${dataBody.type}' không hợp lệ với loại project '${project.type}'`
+      });
+    }
     const task = await taskService.editTask(id, dataBody);
 
     if (!task) next(new Error("Task không tìm thấy"));

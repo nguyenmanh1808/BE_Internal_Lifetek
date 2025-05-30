@@ -94,9 +94,7 @@ exports.updateTaskValidator = Joi.object({
   image: Joi.string().optional().allow(null, "").messages({
     "string.base": "Hình ảnh không hợp lệ",
   }),
-  type: Joi.string()
-    .valid(...Object.values(TYPETASK))
-    .messages({
+  type: Joi.string().messages({
       "string.empty": "Mức độ ưu tiên không được để trống",
       "any.only": "Mức độ ưu tiên không hợp lệ",
     }),
