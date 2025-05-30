@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const { PRIORITY } = require("../constants/index.js");
 const removeAccents = require("remove-accents");
 const getNextTaskCode = require("../utils/generateTaskCode.js");
+const { Schema } = mongoose; // 👈 thêm dòng này ở đầu file
 
 const TaskSchema = new mongoose.Schema(
   {
@@ -52,11 +53,11 @@ const TaskSchema = new mongoose.Schema(
       required: true
     },
     endDate: { type: Date }, // deadline
-     dynamicFields: {
+      dynamicFields: {
         type: Map,
         of: Schema.Types.Mixed,
         default: {}
-      }
+    }
   },
   { timestamps: true, strict: false }
 );

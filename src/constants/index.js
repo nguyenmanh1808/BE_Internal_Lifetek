@@ -40,7 +40,7 @@ const COMMENT = {
   BUG: "BUG",
   STORY: "STORY",
 };
-const TYPEPROJECT = {
+const TYPEPROJECT = { 
   QLDA: "Quản lý dự án",
   QLNV: "Quản lý nhân viên",
   QLHD: "Quản lý hợp đồng"

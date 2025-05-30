@@ -305,7 +305,7 @@ if (
       }
     }
     //check type
-     const project = await projectService.findById(dataBody.projectId);
+     const project = await projectService.getProjectById(dataBody.projectId);
        if (!project) return res.status(404).json({ message: "Project không tồn tại" });
 
     const projectCategoryKey = getKeyByValue(TYPEPROJECT, project.category);
@@ -418,7 +418,7 @@ exports.updateTask = async (req, res, next) => {
     }
      //check type
      
-    const project = await projectService.findById(dataBody.projectId);
+    const project = await projectService.getProjectById(dataBody.projectId);
        if (!project) return res.status(404).json({ message: "Project không tồn tại" });
 
     const projectCategoryKey = getKeyByValue(TYPEPROJECT, project.category);
