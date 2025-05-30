@@ -42,10 +42,9 @@ exports.getAllWorkflowStep = async (req, res, next) => {
   }
 };
 exports.createWorkFlowStep = async (req, res) => {
-  console.log("==> 🛬 Request tới createWorkFlowStep:", req.body);
+
   try {
     const workflowStep = await workFlowService.createWorkFlowStep(req.body);
-
     res.status(200).json(workflowStep);
   } catch (err) {
     res.status(400).json({ message: err.message });

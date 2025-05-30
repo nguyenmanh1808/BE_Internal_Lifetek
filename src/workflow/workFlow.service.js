@@ -43,8 +43,7 @@ exports.getAllWorkFlowStep = async (workflowId) => {
   return workFlowStepData;
 };
 exports.createWorkFlowStep = async (data) => {
-  console.log("createWorkFlowStep nhận data:", data);
-  console.log("createWorkFlowStep nhận data:", data);
+
   const dataStep = {
     workflowId: data.workflowId,
     nameStep: data.nameStep,
@@ -131,7 +130,6 @@ exports.canUserTransitionStep = async (
     workflowId: new mongoose.Types.ObjectId(workflowId),
     fromStep,
     toStep,
-    allowedRoles: userRole,
     allowedRoles: userRole,
   });
   console.log("transition", transition);

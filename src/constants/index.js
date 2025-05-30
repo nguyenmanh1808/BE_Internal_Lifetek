@@ -41,9 +41,9 @@ const COMMENT = {
   STORY: "STORY",
 };
 const TYPEPROJECT = { 
-  QLDA: "Quản lý dự án",
-  QLNV: "Quản lý nhân viên",
-  QLHD: "Quản lý hợp đồng"
+  QLDA: "QLDA",
+  QLNV: "QLNV",
+  QLHD: "QLHD"
 };
 
 const PROJECT_TYPE_TASKS = {
