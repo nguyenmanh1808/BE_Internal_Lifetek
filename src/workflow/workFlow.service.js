@@ -3,6 +3,8 @@ const WorkflowStep = require("./workflowStep.model.js");
 const WorkflowTransition = require("./workflowTransition.js");
 const ProjectRole = require("../projectRole/projectRole.model.js")
 const mongoose = require("mongoose");
+const util = require('util');
+
 exports.getDetailWorkFlowService = async (projectId) => {
   const workFlowData = await workFlow.findOne({ projectId });
   const Id = workFlowData._id;
@@ -157,10 +159,10 @@ exports.addTransition = async(data)=>{
     code: data.projectId,
     projectId: data.projectId
   }
-  const workFlow = await workFlow.create(dataWorkFlow);
+  const workFlowdata = await workFlow.create(dataWorkFlow);
   const step = await Promise.all(data.steps.map(async (item,index)=>{
     let stepData ={
-        workflowId: workFlow._id,
+        workflowId: workFlowdata._id,
         nameStep: item.nameStep,
         stepOrder: item.stepOrder,
         color: item.color
@@ -169,42 +171,61 @@ exports.addTransition = async(data)=>{
   }))
 
   // transition
+  
   // tạo role
-     const projectRooleData = await Promise(data.transitions.map(async(item, index) =>{
-       let dataProjectRole = {
-                projectId: data.projectId,
-                roleName: item.allowedRoles.roleName,
-                description: item.allowedRoles.description,
-                permissions: item.allowedRoles.permissions,
-                userIds : []
-           }
-       return  await ProjectRole.create(dataProjectRole);
+  const totalTransition = data.transitions
 
-    }))
-    const roles = projectRooleData.map((item,index)=>{
+     const projectRoleData = await Promise.all(
+        totalTransition.map(async (item) => {
+            const dataProject = await Promise.all(
+                item.allowedRoles.map(async (roles) => {
+                let dataProjectRole = {
+                  projectId: data.projectId,
+                  roleName: roles.roleName,
+                  description: roles.description,
+                  permissions: roles.permissions,
+                  userIds: []
+                };
+                console.log(dataProjectRole)
+        return dataProjectRole
+      })
+      );
+    return dataProject;
+  })
+);
+const uniqueRoles = Array.from(
+  new Map(
+    projectRoleData.map(obj => [`${obj.projectId}-${obj.roleName}`, obj])
+  ).values()
+);
+    const result  = uniqueRoles.map(async(item,index) =>{
+        return await ProjectRole.create(item)
+    }) 
+    
+    const roles = result.map((item,index)=>{
       return item._id
     })
     // tạo transition
 
     const transiton =  await Promise.all(data.transitions.map(async (item, index) =>{
      
-          let FromStep = await WorkflowStep.find({workflowId: workFlow._id,
+          const FromStep = await WorkflowStep.find({workflowId: workFlowdata._id,
                                                       nameStep : item.fromStep.nameStep,
                                                       stepOrder : item.fromStep.stepOrder })
-          let ToStep = await WorkflowStep.find({workflowId: workFlow._id,
+          const ToStep = await WorkflowStep.find({workflowId: workFlowdata._id,
                                                       nameStep : item.toStep.nameStep,
                                                       stepOrder : item.toStep.stepOrder })
         let dataTranSition = {
-          workflowId: workFlow._id,
+          workflowId: workFlowdata._id,
           fromStep: FromStep._id,
           ToStep: ToStep._id,
           allowedRoles: roles
         }
-        await WorkflowTransition.create(dataTranSition);
+       return  await WorkflowTransition.create(dataTranSition);
      }))
-     
+
   return {
-   workFlow,
+   workFlowdata,
     step,
     transiton
   }
