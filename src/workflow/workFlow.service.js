@@ -2,6 +2,7 @@ const workFlow = require("./workflow.model.js");
 const WorkflowStep = require("./workflowStep.model.js");
 const WorkflowTransition = require("./workflowTransition.js");
 const ProjectRole = require("../projectRole/projectRole.model.js")
+const mongoose = require("mongoose");
 exports.getDetailWorkFlowService = async (projectId) => {
   const workFlowData = await workFlow.findOne({ projectId });
   const Id = workFlowData._id;
@@ -137,72 +138,75 @@ exports.canUserTransitionStep = async (
 };
 
 
-exports.getAllTransition = async ()=>{
-   const workFlowTransitionData = await WorkflowTransition.find()
-    .populate({
-      path: "fromStep",
-      select: "nameStep stepOrder",
-    })
-   .populate({
-      path: "toStep",
-      select: "nameStep stepOrder",
-    })
-    .populate({
-      path: "allowedRoles",
-      select: "roleName permissions description",
-    })
+exports.getAllTransition = async (data)=>{
+   const workFlowTransitionData = await workFlow.find({projectId:data})
+     .populate('steps')
+     .populate({
+          path: 'transitions',               // bước 1: populate steps
+          populate: {
+            path: 'fromStep toStep allowedRoles',      // bước 2: trong mỗi step, populate tiếp assignedUser
+            select: 'nameStep stepOrder roleName description permissions'       // optional: chỉ lấy một số field
+          }
+      });
   if (!workFlowTransitionData) throw new Error("Không tìm thấy workflow");
   return workFlowTransitionData;
 }
 
 exports.addTransition = async(data)=>{
-  const dataFromStep = {
-      workflowId: data.workflowId,
-      nameStep: data.fromStep.nameStep,
-      stepOrder: data.fromStep.stepOrder
+  const dataWorkFlow = {
+    code: data.projectId,
+    projectId: data.projectId
   }
-  const dataToStep = {
-      workflowId: data.workflowId,
-      nameStep: data.toStep.nameStep,
-      stepOrder: data.toStep.stepOrder
-  }
-  const fromStep = await WorkflowStep.create(dataFromStep);
-  const toStep = await WorkflowStep.create(dataToStep);
+  const workFlow = await workFlow.create(dataWorkFlow);
+  const step = await Promise.all(data.steps.map(async (item,index)=>{
+    let stepData ={
+        workflowId: workFlow._id,
+        nameStep: item.nameStep,
+        stepOrder: item.stepOrder,
+        color: item.color
+    } 
+    await WorkflowStep.create(stepData);
+  }))
 
-/// project role
-     const dataProjectRoles =   await Promise.all(data.allowedRoles.map(async (item,index)=>{
-            let dataProjectRole = {
+  // transition
+  // tạo role
+     const projectRooleData = await Promise(data.transitions.map(async(item, index) =>{
+       let dataProjectRole = {
                 projectId: data.projectId,
-                roleName: item.roleName,
-                description: item.description,
-                permissions: item.permissions,
+                roleName: item.allowedRoles.roleName,
+                description: item.allowedRoles.description,
+                permissions: item.allowedRoles.permissions,
                 userIds : []
            }
-         
+       return  await ProjectRole.create(dataProjectRole);
 
-         return  await ProjectRole.create(dataProjectRole);
-
-        }))
-          
-  const roles = dataProjectRoles.map((item,index)=>{
+    }))
+    const roles = projectRooleData.map((item,index)=>{
       return item._id
-  })
-  console.log(roles)
-/////trasition
-  let transiton = {
-          workflowId: data.workflowId,
-          fromStep: fromStep._id,
-          toStep:toStep._id,
-          allowedRoles:roles
+    })
+    // tạo transition
+
+    const transiton =  await Promise.all(data.transitions.map(async (item, index) =>{
+     
+          let FromStep = await WorkflowStep.find({workflowId: workFlow._id,
+                                                      nameStep : item.fromStep.nameStep,
+                                                      stepOrder : item.fromStep.stepOrder })
+          let ToStep = await WorkflowStep.find({workflowId: workFlow._id,
+                                                      nameStep : item.toStep.nameStep,
+                                                      stepOrder : item.toStep.stepOrder })
+        let dataTranSition = {
+          workflowId: workFlow._id,
+          fromStep: FromStep._id,
+          ToStep: ToStep._id,
+          allowedRoles: roles
         }
-  await WorkflowTransition.create(transiton);
-  
-      
+        await WorkflowTransition.create(dataTranSition);
+     }))
+     
   return {
-    toStep,
-    fromStep,
-    transiton,
-    dataProjectRoles
+   workFlow,
+    step,
+    transiton
   }
         
 }

@@ -1,5 +1,6 @@
 const workFlowService = require("./workFlow.service.js");
 const SuccessResponse = require("../utils/SuccessResponse.js");
+const projectService = require("../projects/project.service.js")
 exports.getDetailWorkFlow = async (req, res, next) => {
   try {
     const projectId = req.params.projectId;
@@ -143,7 +144,7 @@ exports.deleteAllWorkflowTransition = async (req, res) => {
 
 exports.getAllTransition = async(req,res)=>{
   try{
-    const dataWorkFlowTransiton = await workFlowService.getAllTransition();
+    const dataWorkFlowTransiton = await workFlowService.getAllTransition('683a68f41f680c95a1699d7b');
     if (!dataWorkFlowTransiton) {
       return next(new Error("Quy trình làm việc không tồn tại"));
     }

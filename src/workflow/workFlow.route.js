@@ -21,7 +21,7 @@ router.delete("/workflow-transition/:workflowTransitionId", workFlowController.d
 router.delete("/delete-all/workflow-transition/:workflowId", workFlowController.deleteAllWorkflowTransition);
 
 // ─── Other Transition APIs ──────────────────
-router.get("/workflow-transition", workFlowController.getAllTransition);
+router.get("/workflow-transition/", workFlowController.getAllTransition);
 router.post("/workflow-transition/add", workFlowController.addTransition);
 router.get("/:projectId", workFlowController.getDetailWorkFlow);
 module.exports = router;

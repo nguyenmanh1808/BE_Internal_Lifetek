@@ -3,7 +3,10 @@ const User = require("../users/user.model.js");
 const mongoose = require("mongoose");
 const removeAccents = require("remove-accents");
 const taskModel = require("../tasks/task.model.js");
-
+const workFlow = require("../workflow/workflow.model.js");
+const WorkflowStep = require("../workflow/workflowStep.model.js");
+const WorkflowTransition = require("../workflow/workflowTransition.js");
+const ProjectRole = require("../projectRole/projectRole.model.js")
 
 exports.createProject = async (data) => {
   const existingProject = await Project.findOne({ code: data.code });
@@ -186,6 +189,10 @@ exports.updateProject = async (id, data) => {
 };
 
 exports.deleteProject = async (id) => {
+    await workFlow.deleteOne({ projectId:id });
+    await WorkflowStep.deleteMany({ projectId:id });
+    await WorkflowTransition.deleteMany({ projectId:id });
+    await ProjectRole.deleteMany({ projectId:id})
   return await Project.findByIdAndDelete(id);
 };
 exports.fetchProjectManager = async (id) => {
@@ -247,6 +254,9 @@ exports.countNameProjects = async (userId, name) => {
   });
 };
 
+exports.getProjectByCategory = async(data)=>{
+  return await Project.find({category: data})
+}
 exports.countProjects = async () => {
   return await Project.countDocuments();
 };
